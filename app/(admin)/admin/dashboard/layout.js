@@ -103,7 +103,7 @@ export default function DashboardLayout({ children }) {
               {collapsed ? '↗' : 'View Site ↗'}
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: '/admin' })}
+              onClick={() => signOut({ callbackUrl: `${window.location.origin}/admin` })}
               style={s.signOutBtn}
               title="Sign Out"
             >
