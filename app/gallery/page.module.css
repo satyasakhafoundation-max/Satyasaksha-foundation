@@ -93,11 +93,13 @@
   grid-row: span 2;
 }
 
-.image {
+/* next/image wrapper — needs position:relative and explicit height */
+.imageWrapper {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
+}
+
+.image {
   transition: transform 0.8s ease;
 }
 

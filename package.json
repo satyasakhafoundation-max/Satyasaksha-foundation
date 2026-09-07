@@ -8,10 +8,17 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
+    "mongoose": "^9.9.4",
+    "next": "14.2.35",
+    "next-auth": "^4.24.15",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.35"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "eslint": "^8",

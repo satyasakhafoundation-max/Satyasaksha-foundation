@@ -1,9 +1,36 @@
 'use client';
 import { useReveal } from '@/hooks/useReveal';
+import { useState } from 'react';
 import styles from './page.module.css';
 
 export default function ContactPage() {
   useReveal();
+
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
+      setStatus('success');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      setStatus('error');
+      setErrorMsg(err.message);
+    }
+  };
 
   return (
     <div className={styles.pageWrap}>
@@ -60,37 +87,54 @@ export default function ContactPage() {
 
           {/* Right: Contact Form */}
           <div className={`reveal reveal-delay-2 ${styles.formCol}`}>
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
-              <h3 className="heading-md" style={{ marginBottom: 'var(--space-6)' }}>Send a Message</h3>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="name">Full Name</label>
-                <input type="text" id="name" placeholder="John Doe" required />
+            {status === 'success' ? (
+              <div className={styles.successCard}>
+                <div className={styles.successIcon}>✅</div>
+                <h3 className="heading-md" style={{ marginBottom: '12px' }}>Message Received!</h3>
+                <p className="text-muted">Thank you for reaching out. Our team will review your message and get back to you within 1-2 business days.</p>
+                <button className="btn btn--primary" style={{ marginTop: '24px' }} onClick={() => setStatus('idle')}>
+                  Send Another Message
+                </button>
               </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="email">Email Address</label>
-                <input type="email" id="email" placeholder="john@example.com" required />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="subject">Subject</label>
-                <select id="subject" required>
-                  <option value="" disabled selected>Select a topic</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="volunteer">Volunteering</option>
-                  <option value="partner">Partnership</option>
-                  <option value="rescue">Animal Rescue Report</option>
-                </select>
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="message">Message</label>
-                <textarea id="message" rows="5" placeholder="How can we help you?" required></textarea>
-              </div>
-              
-              <button type="submit" className="btn btn--gold" style={{ width: '100%' }}>Send Message</button>
-            </form>
+            ) : (
+              <form className={styles.form} onSubmit={handleSubmit}>
+                <h3 className="heading-md" style={{ marginBottom: 'var(--space-6)' }}>Send a Message</h3>
+                
+                <div className={styles.formGroup}>
+                  <label htmlFor="name">Full Name</label>
+                  <input type="text" id="name" placeholder="John Doe" required value={form.name} onChange={handleChange} />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label htmlFor="email">Email Address</label>
+                  <input type="email" id="email" placeholder="john@example.com" required value={form.email} onChange={handleChange} />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label htmlFor="subject">Subject</label>
+                  <select id="subject" required value={form.subject} onChange={handleChange}>
+                    <option value="" disabled>Select a topic</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="volunteer">Volunteering</option>
+                    <option value="partner">Partnership</option>
+                    <option value="rescue">Animal Rescue Report</option>
+                  </select>
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label htmlFor="message">Message</label>
+                  <textarea id="message" rows="5" placeholder="How can we help you?" required value={form.message} onChange={handleChange}></textarea>
+                </div>
+
+                {status === 'error' && (
+                  <div className={styles.errorBanner}>{errorMsg}</div>
+                )}
+                
+                <button type="submit" className="btn btn--gold" style={{ width: '100%' }} disabled={status === 'loading'}>
+                  {status === 'loading' ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            )}
           </div>
 
         </div>
@@ -99,3 +143,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

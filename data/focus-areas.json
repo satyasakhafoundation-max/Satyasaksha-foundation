@@ -32,14 +32,6 @@
     "link": "/our-work#education"
   },
   {
-    "id": "women",
-    "title": "Women",
-    "icon": "⭐",
-    "description": "Uplifting women, strengthening communities",
-    "color": "#74C69D",
-    "link": "/our-work#women"
-  },
-  {
     "id": "healthcare",
     "title": "Healthcare",
     "icon": "🏥",

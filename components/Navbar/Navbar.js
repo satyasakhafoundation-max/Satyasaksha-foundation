@@ -32,6 +32,11 @@ export default function Navbar() {
     setMenuOpen(false);
   }, [pathname]);
 
+  // Do not render public Navbar on admin routes
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.container}>

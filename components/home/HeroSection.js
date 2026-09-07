@@ -47,7 +47,7 @@ export default function HeroSection() {
         </div>
         <div className={styles.statDivider}></div>
         <div className={styles.stat}>
-          <span className={styles.statNum}>2024</span>
+          <span className={styles.statNum}>2026</span>
           <span className={styles.statLabel}>Established</span>
         </div>
         <div className={styles.statDivider}></div>

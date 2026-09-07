@@ -1,11 +1,29 @@
-'use client';
-import { useReveal } from '@/hooks/useReveal';
+// Server Component — no 'use client'
 import Link from 'next/link';
 import styles from './page.module.css';
-import focusData from '@/data/focus-areas.json';
+import dbConnect from '@/lib/mongodb';
+import FocusArea from '@/models/FocusArea';
 
-export default function OurWorkPage() {
-  useReveal();
+export const revalidate = 60;
+
+async function getFocusAreas() {
+  try {
+    await dbConnect();
+    const areas = await FocusArea.find({ isVisible: true })
+      .sort({ order: 1 })
+      .lean();
+
+    return areas.map(area => ({
+      ...area,
+      _id: area._id.toString()
+    }));
+  } catch {
+    return (await import('@/data/focus-areas.json')).default;
+  }
+}
+
+export default async function OurWorkPage() {
+  const focusData = await getFocusAreas();
 
   return (
     <div className={styles.pageWrap}>
@@ -17,7 +35,7 @@ export default function OurWorkPage() {
         <div className={`container ${styles.heroContent}`}>
           <h1 className="heading-hero reveal">Our Work</h1>
           <p className={`reveal reveal-delay-1 ${styles.heroSub}`}>
-            A comprehensive overview of our ten core domains, working in synergy to create a sustainable and compassionate future.
+            A comprehensive overview of our nine core domains, working in synergy to create a sustainable and compassionate future.
           </p>
         </div>
       </section>
