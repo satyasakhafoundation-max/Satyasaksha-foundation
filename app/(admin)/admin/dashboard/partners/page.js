@@ -108,6 +108,7 @@ export default function AdminPartnersPage() {
               <input name="logoUrl" value={form.logoUrl} onChange={handleChange} style={s.input} placeholder="https://... (PNG/SVG with transparent background works best)" />
               {form.logoUrl && (
                 <div style={s.logoPreview}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={form.logoUrl} alt="Logo preview" style={{ height: '40px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display = 'none'} />
                 </div>
               )}
@@ -139,7 +140,7 @@ export default function AdminPartnersPage() {
             <div key={item._id} style={{ ...s.card, opacity: item.isVisible ? 1 : 0.4 }}>
               <div style={s.logoBox}>
                 {item.logoUrl
-                  ? <img src={item.logoUrl} alt={item.name} style={{ maxHeight: '40px', maxWidth: '120px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display = 'none'} />
+                  ? /* eslint-disable @next/next/no-img-element */ <img src={item.logoUrl} alt={item.name} style={{ maxHeight: '40px', maxWidth: '120px', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} onError={e => e.target.style.display = 'none'} /> /* eslint-enable @next/next/no-img-element */
                   : <span style={s.textLogo}>{item.name}</span>
                 }
               </div>

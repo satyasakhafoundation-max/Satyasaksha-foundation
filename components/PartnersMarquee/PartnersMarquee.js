@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // Server Component — fetches partners from DB, renders infinite CSS marquee
 import styles from './PartnersMarquee.module.css';
 import dbConnect from '@/lib/mongodb';

@@ -145,7 +145,13 @@ export default function AdminTestimonialsPage() {
           {items.map((item) => (
             <div key={item._id} style={{ ...s.card, opacity: item.isVisible ? 1 : 0.5 }}>
               <div style={s.cardLeft}>
-                <div style={s.avatar}>{item.avatarUrl ? <img src={item.avatarUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : <span style={s.initials}>{item.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()}</span>}</div>
+                <div style={s.avatar}>
+                  {item.avatarUrl
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    ? <img src={item.avatarUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                    : <span style={s.initials}>{item.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()}</span>
+                  }
+                </div>
                 <div>
                   <p style={s.personName}>{item.name}</p>
                   <p style={s.personTitle}>{item.title}</p>

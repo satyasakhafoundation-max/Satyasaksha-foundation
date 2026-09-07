@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
-export default function AdminSetupPage() {
+function AdminSetupInner() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
@@ -103,5 +103,13 @@ export default function AdminSetupPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function AdminSetupPage() {
+  return (
+    <Suspense fallback={<div className={styles.page}><div className={styles.card}><p style={{ color: 'rgba(255,255,255,0.6)' }}>Loading…</p></div></div>}>
+      <AdminSetupInner />
+    </Suspense>
   );
 }

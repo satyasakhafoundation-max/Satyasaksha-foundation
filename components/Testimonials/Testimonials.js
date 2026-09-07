@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // Server Component — fetches testimonials from DB with ISR fallback
 import styles from './Testimonials.module.css';
 import dbConnect from '@/lib/mongodb';
@@ -61,7 +62,7 @@ export default async function Testimonials() {
         <div className={styles.grid}>
           {testimonials.map((t, i) => (
             <div key={t._id} className={`reveal reveal-delay-${(i % 3) + 1} ${styles.card}`}>
-              <div className={styles.quoteIcon}>"</div>
+              <div className={styles.quoteIcon}>&ldquo;</div>
               <p className={styles.quote}>{t.quote}</p>
               <div className={styles.author}>
                 <div className={styles.avatar}>
