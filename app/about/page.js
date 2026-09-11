@@ -4,9 +4,9 @@ import { useReveal } from '@/hooks/useReveal';
 import styles from './page.module.css';
 
 const teamMembers = [
-  { name: 'Dr. Aarav Sharma', role: 'Founder & Chairman', image: 'https://images.unsplash.com/photo-1556157382-97eda2d62296?q=80&w=600&auto=format&fit=crop' },
-  { name: 'Priya Patel', role: 'Director of Conservation', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop' },
-  { name: 'Rahul Desai', role: 'Head of Rural Education', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=600&auto=format&fit=crop' },
+  { name: 'Mr Rishikesh Panvelkar', role: 'Founder & Chairman', image: '' },
+  { name: '', role: 'Director of Conservation', image: '' },
+  { name: '', role: 'Head of Rural Education', image: '' },
 ];
 
 export default function AboutPage() {
