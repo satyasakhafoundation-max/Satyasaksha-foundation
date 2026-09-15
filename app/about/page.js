@@ -4,9 +4,9 @@ import { useReveal } from '@/hooks/useReveal';
 import styles from './page.module.css';
 
 const teamMembers = [
-  { name: 'Mr. Rishikesh Panvelkar', role: 'Founder & Chairman', image: 'https://github.com/satyasakhafoundation-max/Satyasaksha-foundation/blob/fe9c435bc4021946d6ba26dc13765e8571d51611/WhatsApp%20Image%202026-09-11%20at%2010.06.29%20AM.jpeg' },
-  { name: 'Ashutosh', role: 'Project Manager', image: 'https://github.com/satyasakhafoundation-max/Satyasaksha-foundation/blob/fe9c435bc4021946d6ba26dc13765e8571d51611/ashutosh.jpeg' },
-  { name: 'Sneha', role: 'Project Coordinator', image: 'https://github.com/satyasakhafoundation-max/Satyasaksha-foundation/blob/fe9c435bc4021946d6ba26dc13765e8571d51611/WhatsApp%20Image%202026-09-13%20at%2010.18.40%20PM.jpeg' },
+  { name: 'Mr. Rishikesh Panvelkar', role: 'Founder & Chairman', image: 'https://raw.githubusercontent.com/satyasakhafoundation-max/Satyasaksha-foundation/fe9c435bc4021946d6ba26dc13765e8571d51611/WhatsApp%20Image%202026-09-11%20at%2010.06.29%20AM.jpeg' },
+  { name: 'Ashutosh', role: 'Project Manager', image: 'https://raw.githubusercontent.com/satyasakhafoundation-max/Satyasaksha-foundation/fe9c435bc4021946d6ba26dc13765e8571d51611/ashutosh.jpeg' },
+  { name: 'Sneha', role: 'Project Coordinator', image: 'https://raw.githubusercontent.com/satyasakhafoundation-max/Satyasaksha-foundation/fe9c435bc4021946d6ba26dc13765e8571d51611/WhatsApp%20Image%202026-09-13%20at%2010.18.40%20PM.jpeg' },
 ];
 
 export default function AboutPage() {
