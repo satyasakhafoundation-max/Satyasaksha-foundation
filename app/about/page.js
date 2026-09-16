@@ -78,7 +78,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section (Hidden for now)
+      {/* Team Section */}
       <section className={`section ${styles.teamSection}`}>
         <div className="container">
           <div className="section-header reveal">
@@ -102,7 +102,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      */}
 
     </div>
   );
