@@ -5,7 +5,7 @@
     "icon": "🌱",
     "description": "Protecting our planet for future generations",
     "color": "#1B4332",
-    "link": "/our-work#environment"
+    "link": "/news"
   },
   {
     "id": "wildlife",
@@ -13,7 +13,7 @@
     "icon": "🐾",
     "description": "Guardians of biodiversity",
     "color": "#2D6A4F",
-    "link": "/our-work#wildlife"
+    "link": "/news"
   },
   {
     "id": "animal-welfare",
@@ -21,7 +21,7 @@
     "icon": "🩺",
     "description": "Every life deserves compassion",
     "color": "#40916C",
-    "link": "/our-work#animal-welfare"
+    "link": "/news"
   },
   {
     "id": "education",
@@ -29,7 +29,7 @@
     "icon": "📚",
     "description": "Empowering minds, building futures",
     "color": "#52B788",
-    "link": "/our-work#education"
+    "link": "/news"
   },
   {
     "id": "healthcare",
@@ -37,7 +37,7 @@
     "icon": "🏥",
     "description": "Accessible wellness for all",
     "color": "#B7E4C7",
-    "link": "/our-work#healthcare"
+    "link": "/news"
   },
   {
     "id": "sports",
@@ -45,7 +45,7 @@
     "icon": "🏃",
     "description": "Nurturing youth potential",
     "color": "#C9A84C",
-    "link": "/our-work#sports"
+    "link": "/news"
   },
   {
     "id": "food",
@@ -53,7 +53,7 @@
     "icon": "🌾",
     "description": "Food distribution & support",
     "color": "#D4AF37",
-    "link": "/our-work#food"
+    "link": "/news"
   },
   {
     "id": "agriculture",
@@ -61,7 +61,7 @@
     "icon": "🚜",
     "description": "Sustainable rural development",
     "color": "#5C4827",
-    "link": "/our-work#agriculture"
+    "link": "/news"
   },
   {
     "id": "research",
@@ -69,6 +69,6 @@
     "icon": "🔬",
     "description": "Innovation for social good",
     "color": "#1F2937",
-    "link": "/our-work#research"
+    "link": "/news"
   }
 ]

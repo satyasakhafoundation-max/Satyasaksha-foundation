@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useReveal } from '@/hooks/useReveal';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -38,20 +37,19 @@ function Counter({ targetValue, duration = 2000 }) {
   return <span ref={elementRef}>{count.toLocaleString()}</span>;
 }
 
-export default function ClientImpactPage({ stats }) {
-  useReveal();
+export default function ClientImpactPage({ stats, workHighlights = [] }) {
 
   return (
     <div className={styles.pageWrap}>
-      
+
       {/* Page Hero */}
       <section className={styles.hero}>
         <div className={styles.heroBg} style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=2500&auto=format&fit=crop")' }}></div>
         <div className={styles.heroOverlay}></div>
         <div className={`container ${styles.heroContent}`}>
-          <h1 className="heading-hero reveal">Our Impact</h1>
+          <h1 className="heading-hero reveal">Our Impact &amp; Work</h1>
           <p className={`reveal reveal-delay-1 ${styles.heroSub}`}>
-            Transparency and measurable outcomes. See how your support translates into real-world change.
+            Transparency and measurable outcomes. See how your support translates into real-world change — and the work behind it.
           </p>
         </div>
       </section>
@@ -79,6 +77,31 @@ export default function ClientImpactPage({ stats }) {
           </div>
         </div>
       </section>
+
+      {/* Our Work in Pictures */}
+      {workHighlights.length > 0 && (
+        <section className={`section ${styles.picturesSection}`}>
+          <div className="container">
+            <div className="section-header text-center reveal">
+              <p className="label" style={{ color: 'var(--gold-dark)' }}>In Pictures</p>
+              <div className="divider-gold"></div>
+              <h2 className="heading-xl">Our Work</h2>
+            </div>
+
+            <div className={styles.picturesGrid}>
+              {workHighlights.map((item, i) => (
+                <div key={item._id || item.id} className={`reveal reveal-delay-${(i % 3) + 1} ${styles.pictureCard}`}>
+                  <div className={styles.pictureImage} style={{ backgroundImage: `url(${item.image})` }}></div>
+                  <div className={styles.pictureOverlay}>
+                    <p className={styles.pictureTitle}>{item.title}</p>
+                    {item.description && <p className={styles.pictureDesc}>{item.description}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Narrative Section */}
       <section className={`section section-dark ${styles.narrativeSection}`}>

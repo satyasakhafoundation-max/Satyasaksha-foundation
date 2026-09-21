@@ -21,6 +21,14 @@
   box-shadow: var(--shadow-xl);
 }
 
+.cardTranslucent {
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+}
+
 .cardInner {
   width: 100%;
   height: 100%;
@@ -45,6 +53,14 @@
   font-size: 2.5rem;
   margin-bottom: var(--space-4);
   transition: transform var(--transition-base);
+  display: inline-flex;
+}
+
+.iconImg {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .card:hover .icon {

@@ -1,10 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './AboutSnippet.module.css';
 
 export default function AboutSnippet() {
-  useReveal();
 
   return (
     <section className={styles.section} id="about-snippet">

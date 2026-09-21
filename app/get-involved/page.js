@@ -1,10 +1,8 @@
 'use client';
-import { useReveal } from '@/hooks/useReveal';
 import Link from 'next/link';
 import styles from './page.module.css';
 
 export default function GetInvolvedPage() {
-  useReveal();
 
   return (
     <div className={styles.pageWrap}>
@@ -26,7 +24,7 @@ export default function GetInvolvedPage() {
         <div className={`container ${styles.grid}`}>
           
           {/* Volunteer */}
-          <div className={`reveal ${styles.card}`}>
+          <div id="volunteer" className={`reveal ${styles.card}`}>
             <div className={styles.cardHeader}>
               <div className={styles.icon}>🤝</div>
               <h2 className="heading-md">Volunteer</h2>
@@ -43,7 +41,7 @@ export default function GetInvolvedPage() {
           </div>
 
           {/* Partner */}
-          <div className={`reveal reveal-delay-1 ${styles.card}`}>
+          <div id="partner" className={`reveal reveal-delay-1 ${styles.card}`}>
             <div className={styles.cardHeader}>
               <div className={styles.icon}>🏢</div>
               <h2 className="heading-md">Partner With Us</h2>
@@ -73,7 +71,7 @@ export default function GetInvolvedPage() {
               <li>Regular progress and audit reports</li>
               <li>Naming rights for major infrastructure</li>
             </ul>
-            <Link href="/projects" className="btn btn--outline" style={{ marginTop: 'auto' }}>View Projects to Sponsor</Link>
+            <Link href="/news" className="btn btn--outline" style={{ marginTop: 'auto' }}>Read About Our Initiatives</Link>
           </div>
 
         </div>

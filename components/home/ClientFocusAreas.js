@@ -1,10 +1,10 @@
 'use client';
 import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './FocusAreas.module.css';
 
+const isImageIcon = (icon) => typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('data:image'));
+
 export default function ClientFocusAreas({ areas }) {
-  useReveal();
 
   return (
     <section className="section" id="focus-areas">
@@ -21,15 +21,19 @@ export default function ClientFocusAreas({ areas }) {
 
         <div className={styles.grid}>
           {areas.map((area, i) => (
-            <Link 
-              href={area.link} 
-              key={area.id || area._id} 
-              className={`reveal reveal-delay-${(i % 5) + 1} ${styles.card}`}
+            <Link
+              href={area.link}
+              key={area.id || area._id}
+              className={`reveal reveal-delay-${(i % 5) + 1} ${styles.card} ${area.cardStyle === 'translucent' ? styles.cardTranslucent : ''}`}
             >
               <div className={styles.cardInner}>
                 {/* Default State */}
                 <div className={styles.defaultState}>
-                  <span className={styles.icon}>{area.icon}</span>
+                  <span className={styles.icon}>
+                    {isImageIcon(area.icon)
+                      ? <img src={area.icon} alt="" className={styles.iconImg} />
+                      : area.icon}
+                  </span>
                   <h3 className={styles.title}>{area.title}</h3>
                   <div className={styles.line}></div>
                   <p className={styles.desc}>{area.description}</p>

@@ -5,7 +5,7 @@ const PartnerSchema = new mongoose.Schema({
   logoUrl: { type: String, required: true },
   websiteUrl: { type: String, default: '' },
   isVisible: { type: Boolean, default: true },
-  order: { type: Number, default: 0 },
+  order: { type: Number, default: 0, min: 0 },
   createdAt: { type: Date, default: Date.now },
 });
 

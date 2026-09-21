@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { requireSuperAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 
@@ -8,9 +7,8 @@ export const dynamic = 'force-dynamic';
 
 // GET — List all admin users (super_admin only)
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (session.user.role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { error } = await requireSuperAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -21,9 +19,8 @@ export async function GET() {
 
 // POST — Generate invite link for a new admin (super_admin only)
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (session.user.role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { error } = await requireSuperAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -61,9 +58,8 @@ export async function POST(request) {
 
 // PATCH — Toggle user active status (super_admin only)
 export async function PATCH(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (session.user.role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { session, error } = await requireSuperAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -74,7 +70,7 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'You cannot deactivate your own account.' }, { status: 400 });
     }
 
-    const user = await User.findByIdAndUpdate(id, { isActive }, { new: true });
+    const user = await User.findByIdAndUpdate(id, { isActive }, { new: true, runValidators: true });
     if (!user) return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     return NextResponse.json({ success: true, isActive: user.isActive });
   } catch { return NextResponse.json({ error: 'Failed to update user.' }, { status: 500 }); }
@@ -82,9 +78,8 @@ export async function PATCH(request) {
 
 // DELETE — Remove admin user (super_admin only)
 export async function DELETE(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (session.user.role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  const { session, error } = await requireSuperAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -95,7 +90,8 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'You cannot delete your own account.' }, { status: 400 });
     }
 
-    await User.findByIdAndDelete(id);
+    const deleted = await User.findByIdAndDelete(id);
+    if (!deleted) return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     return NextResponse.json({ success: true });
   } catch { return NextResponse.json({ error: 'Failed to delete user.' }, { status: 500 }); }
 }

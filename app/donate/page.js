@@ -1,26 +1,39 @@
 'use client';
 import { useState, Suspense } from 'react';
-import { useReveal } from '@/hooks/useReveal';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
 function DonateContent() {
-  useReveal();
   const searchParams = useSearchParams();
   const preselectedAmount = searchParams.get('amount');
   
   const [amount, setAmount] = useState(preselectedAmount || '1000');
   const [customAmount, setCustomAmount] = useState('');
-  
+  const [amountError, setAmountError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
   const handlePresetClick = (val) => {
     setAmount(val);
     setCustomAmount('');
+    setAmountError('');
   };
 
   const handleCustomChange = (e) => {
-    setCustomAmount(e.target.value);
+    const value = e.target.value;
+    setCustomAmount(value);
     setAmount('custom');
+
+    if (value === '') {
+      setAmountError('');
+    } else if (Number(value) <= 0) {
+      setAmountError('Please enter an amount greater than ₹0.');
+    } else {
+      setAmountError('');
+    }
   };
+
+  const finalAmount = Number(amount === 'custom' ? customAmount : amount);
+  const isAmountValid = finalAmount > 0;
 
   return (
     <div className={styles.pageWrap}>
@@ -59,58 +72,89 @@ function DonateContent() {
           {/* Form Side */}
           <div className={`reveal reveal-delay-2 ${styles.formCol}`}>
             <div className={styles.formCard}>
-              <h3 className="heading-md" style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>Choose Your Impact</h3>
-              
-              <div className={styles.amountGrid}>
-                {['500', '1000', '2500', '5000'].map((preset) => (
-                  <button 
-                    key={preset}
-                    className={`${styles.amountBtn} ${amount === preset ? styles.active : ''}`}
-                    onClick={() => handlePresetClick(preset)}
-                  >
-                    ₹{preset}
+              {submitted ? (
+                <div style={{ textAlign: 'center', padding: 'var(--space-6) 0' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-4)' }}>🙏</div>
+                  <h3 className="heading-md" style={{ marginBottom: 'var(--space-3)' }}>Thank You for Your Intent to Give</h3>
+                  <p className="text-muted" style={{ marginBottom: 'var(--space-6)' }}>
+                    Online payments aren&apos;t live on the site just yet. We&apos;ve noted your interest in donating ₹{finalAmount} — our team will reach out shortly to confirm your contribution.
+                  </p>
+                  <button type="button" className="btn btn--outline" onClick={() => setSubmitted(false)}>
+                    Back to Donation Form
                   </button>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <>
+                  <h3 className="heading-md" style={{ marginBottom: 'var(--space-6)', textAlign: 'center' }}>Choose Your Impact</h3>
 
-              <div className={styles.customAmount}>
-                <label>Or enter custom amount:</label>
-                <div className={styles.inputWrap}>
-                  <span className={styles.currency}>₹</span>
-                  <input 
-                    type="number" 
-                    placeholder="Enter amount" 
-                    value={customAmount}
-                    onChange={handleCustomChange}
-                  />
-                </div>
-              </div>
+                  <div className={styles.amountGrid}>
+                    {['500', '1000', '2500', '5000'].map((preset) => (
+                      <button
+                        key={preset}
+                        className={`${styles.amountBtn} ${amount === preset ? styles.active : ''}`}
+                        onClick={() => handlePresetClick(preset)}
+                      >
+                        ₹{preset}
+                      </button>
+                    ))}
+                  </div>
 
-              <form className={styles.detailsForm} onSubmit={(e) => {
-                e.preventDefault();
-                alert(`Proceeding to payment gateway for ₹${amount === 'custom' ? customAmount : amount}`);
-              }}>
-                <div className={styles.formGroup}>
-                  <label>Full Name</label>
-                  <input type="text" required />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Email Address</label>
-                  <input type="email" required />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>PAN Number (For Tax Receipt)</label>
-                  <input type="text" />
-                </div>
-                
-                <button type="submit" className="btn btn--gold" style={{ width: '100%', marginTop: 'var(--space-4)' }}>
-                  Proceed to Payment
-                </button>
-              </form>
+                  <div className={styles.customAmount}>
+                    <label>Or enter custom amount:</label>
+                    <div className={styles.inputWrap}>
+                      <span className={styles.currency}>₹</span>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="Enter amount"
+                        value={customAmount}
+                        onChange={handleCustomChange}
+                      />
+                    </div>
+                    {amountError && (
+                      <p className={styles.amountError} style={{ color: 'var(--error, #d9534f)', marginTop: 'var(--space-2)', fontSize: '0.875rem' }}>
+                        {amountError}
+                      </p>
+                    )}
+                  </div>
 
-              <div className={styles.secureNote}>
-                🔒 Secure 256-bit SSL Encrypted Payment
-              </div>
+                  <form className={styles.detailsForm} onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!isAmountValid) {
+                      setAmountError('Please enter an amount greater than ₹0.');
+                      return;
+                    }
+                    setSubmitted(true);
+                  }}>
+                    <div className={styles.formGroup}>
+                      <label>Full Name</label>
+                      <input type="text" required />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>Email Address</label>
+                      <input type="email" required />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>PAN Number (For Tax Receipt)</label>
+                      <input type="text" />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="btn btn--gold"
+                      disabled={!isAmountValid}
+                      style={{ width: '100%', marginTop: 'var(--space-4)', opacity: isAmountValid ? 1 : 0.5, cursor: isAmountValid ? 'pointer' : 'not-allowed' }}
+                    >
+                      Proceed to Payment
+                    </button>
+                  </form>
+
+                  <div className={styles.secureNote}>
+                    🔒 Secure 256-bit SSL Encrypted Payment
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

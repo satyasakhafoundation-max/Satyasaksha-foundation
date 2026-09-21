@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import ContactMessage from '@/models/ContactMessage';
 
@@ -77,10 +76,8 @@ export async function POST(request) {
 
 // GET /api/contact — Admin only (view all messages)
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -93,10 +90,8 @@ export async function GET() {
 
 // PATCH /api/contact — Admin only (mark as read/unread)
 export async function PATCH(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -111,10 +106,8 @@ export async function PATCH(request) {
 
 // DELETE /api/contact?id=xxx — Admin only
 export async function DELETE(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();

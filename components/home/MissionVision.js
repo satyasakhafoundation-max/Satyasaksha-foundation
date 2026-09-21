@@ -1,9 +1,7 @@
 'use client';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './MissionVision.module.css';
 
 export default function MissionVision() {
-  useReveal();
 
   return (
     <section className={`section ${styles.section}`} id="mission-vision">

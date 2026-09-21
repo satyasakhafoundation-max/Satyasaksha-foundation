@@ -7,11 +7,10 @@ import styles from './Navbar.module.css';
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'About Us', path: '/about' },
-  { name: 'Our Work', path: '/our-work' },
-  { name: 'Projects', path: '/projects' },
-  { name: 'Impact', path: '/impact' },
-  { name: 'News', path: '/news' },
-  { name: 'Gallery', path: '/gallery' },
+  { name: 'Our Team', path: '/team' },
+  { name: 'Impact & Work', path: '/impact' },
+  { name: 'News & Blogs', path: '/news' },
+  { name: 'Merchandise', path: '/products' },
   { name: 'Get Involved', path: '/get-involved' },
   { name: 'Contact', path: '/contact' },
 ];

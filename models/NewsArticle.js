@@ -33,6 +33,10 @@ const NewsArticleSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  images: {
+    type: [String],
+    default: [],
+  },
   author: {
     type: String,
     default: 'Satyasaksha Foundation',

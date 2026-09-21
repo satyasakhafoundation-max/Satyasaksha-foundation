@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './ImpactSection.module.css';
 
 // Counter animation component
@@ -40,14 +39,13 @@ function Counter({ targetValue, duration = 2000 }) {
 }
 
 export default function ClientImpactSection({ stats }) {
-  useReveal();
 
   return (
     <section className={`section ${styles.section}`} id="impact">
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         
         <div className={`section-header reveal ${styles.headerOverride}`}>
-          <p className="label">Our Reach</p>
+          <p className="label">Our Impact &amp; Work</p>
           <div className="divider-gold"></div>
           <h2 className="heading-xl">Every Action, Every Life</h2>
           <p className="text-muted" style={{ maxWidth: '600px', margin: 'var(--space-4) auto 0', color: 'rgba(255,255,255,0.6)' }}>

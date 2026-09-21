@@ -6,7 +6,7 @@ const TestimonialSchema = new mongoose.Schema({
   quote: { type: String, required: true, maxlength: 500 },
   avatarUrl: { type: String, default: '' },
   isVisible: { type: Boolean, default: true },
-  order: { type: Number, default: 0 },
+  order: { type: Number, default: 0, min: 0 },
   createdAt: { type: Date, default: Date.now },
 });
 

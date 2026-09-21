@@ -5,8 +5,10 @@ import Link from 'next/link';
 const cards = [
   { href: '/admin/dashboard/stats', icon: '📈', title: 'Impact Stats', desc: 'Edit live impact numbers shown on the homepage and impact page.' },
   { href: '/admin/dashboard/focus-areas', icon: '🌿', title: 'Focus Areas', desc: 'Add, edit or hide the 9 work domains shown site-wide.' },
-  { href: '/admin/dashboard/gallery', icon: '🖼️', title: 'Gallery', desc: 'Upload new images, manage captions and categories.' },
-  { href: '/admin/dashboard/news', icon: '📰', title: 'News & Blog', desc: 'Publish articles, manage drafts, and keep the community updated.' },
+  { href: '/admin/dashboard/core-values', icon: '🐘', title: 'About — Core Values', desc: 'Edit the Core Values cards on the About Us page.' },
+  { href: '/admin/dashboard/team', icon: '👤', title: 'Our Team', desc: 'Manage photos, names, roles and bios on the Team page.' },
+  { href: '/admin/dashboard/news', icon: '📰', title: 'News & Blog', desc: 'Publish articles with images, manage drafts, and keep the community updated.' },
+  { href: '/admin/dashboard/products', icon: '🛍️', title: 'Products', desc: 'Manage merchandise like key chains, brooches, book marks, wind chimes, and tote bags.' },
   { href: '/admin/dashboard/testimonials', icon: '💬', title: 'Testimonials', desc: 'Manage the voices of impact quotes shown on the homepage.' },
   { href: '/admin/dashboard/partners', icon: '🤝', title: 'Partners', desc: 'Add or remove logos from the scrolling partners marquee.' },
   { href: '/admin/dashboard/contacts', icon: '📬', title: 'Messages', desc: 'View contact form submissions from visitors.' },

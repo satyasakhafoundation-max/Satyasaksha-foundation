@@ -127,6 +127,60 @@
   transform: translate(16px, 16px);
 }
 
+/* Our Work in Pictures */
+.picturesSection {
+  background: var(--ivory);
+}
+
+.picturesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.pictureCard {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  box-shadow: var(--shadow-md);
+}
+
+.pictureImage {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+
+.pictureCard:hover .pictureImage {
+  transform: scale(1.08);
+}
+
+.pictureOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(13,26,13,0.85) 0%, transparent 55%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-5);
+}
+
+.pictureTitle {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: var(--space-1);
+}
+
+.pictureDesc {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .statsGrid {
@@ -139,10 +193,16 @@
     max-width: 600px;
     margin: 0 auto;
   }
+  .picturesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 600px) {
   .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .picturesGrid {
     grid-template-columns: 1fr;
   }
 }

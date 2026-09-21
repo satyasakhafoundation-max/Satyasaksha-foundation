@@ -1,10 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './DonationCta.module.css';
 
 export default function DonationCta() {
-  useReveal();
 
   return (
     <section className={styles.section} id="donate-cta">

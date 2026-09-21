@@ -35,10 +35,10 @@ export default function Footer() {
             <h4 className={styles.colTitle}>Foundation</h4>
             <ul>
               <li><Link href="/about">About Us</Link></li>
-              <li><Link href="/our-work">Our Work</Link></li>
-              <li><Link href="/projects">Projects</Link></li>
-              <li><Link href="/impact">Impact Metrics</Link></li>
-              <li><Link href="/gallery">Gallery</Link></li>
+              <li><Link href="/team">Our Team</Link></li>
+              <li><Link href="/impact">Impact &amp; Work</Link></li>
+              <li><Link href="/news">News &amp; Blogs</Link></li>
+              <li><Link href="/products">Merchandise</Link></li>
             </ul>
           </div>
 

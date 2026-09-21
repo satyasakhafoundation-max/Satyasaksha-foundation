@@ -1,79 +1,38 @@
-'use client';
+// Server Component — queries published news directly from MongoDB, cached for 60s
 import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
-import styles from './LatestUpdates.module.css';
-import newsData from '@/data/news.json';
-import galleryData from '@/data/gallery.json';
+import ClientLatestUpdates from './ClientLatestUpdates';
+import dbConnect from '@/lib/mongodb';
+import NewsArticle from '@/models/NewsArticle';
+import newsStaticData from '@/data/news.json';
 
-export default function LatestUpdates() {
-  useReveal();
+export const revalidate = 60;
 
-  return (
-    <section className="section" id="latest-updates">
-      <div className="container">
-        
-        <div className={styles.grid}>
-          
-          {/* Left Column: Latest News */}
-          <div className={styles.newsCol}>
-            <div className={`reveal ${styles.headerWrap}`}>
-              <p className="label">News & Updates</p>
-              <div className="divider-gold" style={{ margin: 'var(--space-4) 0', marginLeft: '0' }}></div>
-              <h2 className="heading-lg">Latest Stories</h2>
-            </div>
+async function getLatestNews() {
+  try {
+    await dbConnect();
+    const articles = await NewsArticle.find({ isPublished: true })
+      .sort({ publishedAt: -1 })
+      .limit(3)
+      .lean();
 
-            <div className={styles.newsList}>
-              {newsData.map((news, i) => (
-                <Link href={news.link} key={news.id} className={`reveal reveal-delay-${i+1} ${styles.newsCard}`}>
-                  <div className={styles.newsImage} style={{ backgroundImage: `url(${news.image})` }}></div>
-                  <div className={styles.newsContent}>
-                    <div className={styles.newsMeta}>
-                      <span className={styles.newsCategory}>{news.category}</span>
-                      <span className={styles.newsDate}>{news.date}</span>
-                    </div>
-                    <h3 className={styles.newsTitle}>{news.title}</h3>
-                    <p className={styles.newsExcerpt}>{news.excerpt}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
+    if (articles.length > 0) {
+      return articles.map((a) => ({
+        id: a._id.toString(),
+        title: a.title,
+        date: a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '',
+        category: a.category,
+        excerpt: a.excerpt,
+        image: a.imageUrl || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop',
+        link: `/news/${a.slug}`,
+      }));
+    }
+  } catch {
+    // fall through to static data
+  }
+  return newsStaticData;
+}
 
-            <div className={`reveal reveal-delay-3 ${styles.actionWrap}`}>
-              <Link href="/news" className="btn btn--outline">
-                Read All News
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column: Gallery Preview */}
-          <div className={styles.galleryCol}>
-            <div className={`reveal ${styles.headerWrap}`}>
-              <p className="label">In Pictures</p>
-              <div className="divider-gold" style={{ margin: 'var(--space-4) 0', marginLeft: '0' }}></div>
-              <h2 className="heading-lg">Gallery Preview</h2>
-            </div>
-
-            <div className={styles.galleryGrid}>
-              {galleryData.map((item, i) => (
-                <Link href="/gallery" key={item.id} className={`reveal reveal-delay-${(i%2)+1} ${styles.galleryItem}`}>
-                  <div className={styles.galleryImage} style={{ backgroundImage: `url(${item.image})` }}></div>
-                  <div className={styles.galleryOverlay}>
-                    <span>{item.caption}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            <div className={`reveal reveal-delay-3 ${styles.actionWrap}`}>
-              <Link href="/gallery" className="btn btn--outline">
-                View Full Gallery
-              </Link>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-  );
+export default async function LatestUpdates() {
+  const news = await getLatestNews();
+  return <ClientLatestUpdates news={news} />;
 }

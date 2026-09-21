@@ -1,17 +1,19 @@
-// Server Component — no 'use client' directive
-// Fetches from DB, cached for 60s, so public site stays fast
-
+// Server Component — queries the DB directly, cached for 60s so the public site stays fast
 import ClientImpactSection from './ClientImpactSection';
+import dbConnect from '@/lib/mongodb';
+import ImpactStat from '@/models/ImpactStat';
+
+export const revalidate = 60;
 
 async function getStats() {
   try {
-    // In production, use absolute URL. In dev, relative works with base URL.
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/admin/stats`, {
-      next: { revalidate: 60 }, // Cache for 60 seconds
-    });
-    if (!res.ok) throw new Error('Failed to fetch');
-    return res.json();
+    await dbConnect();
+    const stats = await ImpactStat.find({}).sort({ order: 1 }).lean();
+
+    return stats.map((stat) => ({
+      ...stat,
+      _id: stat._id.toString(),
+    }));
   } catch {
     // Fallback to local JSON if DB is not available
     return (await import('@/data/impact-stats.json')).default;

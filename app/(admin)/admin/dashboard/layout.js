@@ -6,10 +6,14 @@ import { useState } from 'react';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/admin/dashboard/hero-images', label: 'Homepage Background', icon: '🌄' },
   { href: '/admin/dashboard/stats', label: 'Impact Stats', icon: '📈' },
+  { href: '/admin/dashboard/work-highlights', label: 'Our Work — Pictures', icon: '📸' },
   { href: '/admin/dashboard/focus-areas', label: 'Focus Areas', icon: '🌿' },
-  { href: '/admin/dashboard/gallery', label: 'Gallery', icon: '🖼️' },
+  { href: '/admin/dashboard/core-values', label: 'About — Core Values', icon: '🐘' },
+  { href: '/admin/dashboard/team', label: 'Our Team', icon: '👤' },
   { href: '/admin/dashboard/news', label: 'News & Blog', icon: '📰' },
+  { href: '/admin/dashboard/products', label: 'Products', icon: '🛍️' },
   { href: '/admin/dashboard/testimonials', label: 'Testimonials', icon: '💬' },
   { href: '/admin/dashboard/partners', label: 'Partners', icon: '🤝' },
   { href: '/admin/dashboard/contacts', label: 'Messages', icon: '📬' },

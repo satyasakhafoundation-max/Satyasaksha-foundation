@@ -9,16 +9,21 @@
   overflow: hidden;
 }
 
-/* Background Layers */
+/* Background Layers — stacked, crossfading when there is more than one */
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2500&auto=format&fit=crop'); /* Dramatic forest landscape */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   z-index: 0;
   transform: scale(1.05); /* Slight zoom for dramatic effect */
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.bgImageActive {
+  opacity: 1;
 }
 
 .overlay {

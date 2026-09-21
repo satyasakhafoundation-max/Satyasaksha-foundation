@@ -1,10 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
 import styles from './PillarHighlights.module.css';
 
 export default function PillarHighlights() {
-  useReveal();
 
   return (
     <section className="section" id="core-pillars">
@@ -30,7 +28,7 @@ export default function PillarHighlights() {
               <li>Rescue & Rehabilitation of Injured Animals</li>
               <li>Community Awareness Programs</li>
             </ul>
-            <Link href="/our-work#wildlife" className="btn btn--outline">Discover More</Link>
+            <Link href="/news" className="btn btn--outline">Discover More</Link>
           </div>
         </div>
 
@@ -54,7 +52,7 @@ export default function PillarHighlights() {
               <li>Green School Infrastructure</li>
               <li>Vocational Training & Skill Development</li>
             </ul>
-            <Link href="/our-work#education" className="btn btn--outline">Discover More</Link>
+            <Link href="/news" className="btn btn--outline">Discover More</Link>
           </div>
         </div>
 

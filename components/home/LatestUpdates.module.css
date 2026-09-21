@@ -1,15 +1,11 @@
-.grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: var(--space-16);
-}
-
 .headerWrap {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
+  text-align: center;
 }
 
 .actionWrap {
   margin-top: var(--space-8);
+  text-align: center;
 }
 
 /* News List */
@@ -17,6 +13,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .newsCard {
@@ -34,7 +32,7 @@
 }
 
 .newsImage {
-  width: 200px;
+  width: 240px;
   background-size: cover;
   background-position: center;
   flex-shrink: 0;
@@ -44,6 +42,7 @@
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .newsMeta {
@@ -74,7 +73,7 @@
 }
 
 .newsExcerpt {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--charcoal-muted);
   line-height: 1.5;
   display: -webkit-box;
@@ -84,68 +83,7 @@
   overflow: hidden;
 }
 
-/* Gallery Grid */
-.galleryGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-.galleryItem {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 1;
-  display: block;
-}
-
-.galleryImage {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.6s ease;
-}
-
-.galleryItem:hover .galleryImage {
-  transform: scale(1.1);
-}
-
-.galleryOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(13,26,13,0.8) 0%, transparent 60%);
-  display: flex;
-  align-items: flex-end;
-  padding: var(--space-4);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.galleryItem:hover .galleryOverlay {
-  opacity: 1;
-}
-
-.galleryOverlay span {
-  color: var(--white);
-  font-size: 0.85rem;
-  font-weight: 500;
-  transform: translateY(10px);
-  transition: transform var(--transition-base);
-}
-
-.galleryItem:hover .galleryOverlay span {
-  transform: translateY(0);
-}
-
 /* Responsive */
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-16);
-  }
-}
-
 @media (max-width: 600px) {
   .newsCard {
     flex-direction: column;

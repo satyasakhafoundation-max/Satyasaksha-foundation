@@ -16,7 +16,7 @@ const ContactMessageSchema = new mongoose.Schema({
   subject: {
     type: String,
     required: true,
-    enum: ['general', 'volunteer', 'partner', 'rescue'],
+    enum: ['general', 'volunteer', 'partner', 'membership', 'rescue'],
     default: 'general',
   },
   message: {

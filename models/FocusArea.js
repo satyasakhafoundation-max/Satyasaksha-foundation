@@ -34,10 +34,16 @@ const FocusAreaSchema = new mongoose.Schema(
     order: {
       type: Number,
       default: 0,
+      min: 0,
     },
     isVisible: {
       type: Boolean,
       default: true,
+    },
+    cardStyle: {
+      type: String,
+      enum: ['solid', 'translucent'],
+      default: 'solid',
     },
   },
   { timestamps: true }

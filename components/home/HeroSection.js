@@ -1,61 +1,26 @@
-'use client';
-import Link from 'next/link';
-import { useReveal } from '@/hooks/useReveal';
-import styles from './HeroSection.module.css';
+// Server Component — queries HeroImage from DB, cached for 60s
+import ClientHeroSection from './ClientHeroSection';
+import dbConnect from '@/lib/mongodb';
+import HeroImage from '@/models/HeroImage';
 
-export default function HeroSection() {
-  useReveal();
+export const revalidate = 60;
 
-  return (
-    <section className={styles.hero}>
-      {/* Background Image & Overlay */}
-      <div className={styles.bgImage}></div>
-      <div className={styles.overlay}></div>
-      <div className={styles.texture}></div>
+const DEFAULT_BG = 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2500&auto=format&fit=crop';
 
-      <div className={`container ${styles.content}`}>
-        <div className={`reveal ${styles.labelWrap}`}>
-          <span className="label">Satyasaksha Foundation</span>
-          <div className={styles.divider}></div>
-        </div>
+async function getHeroImages() {
+  try {
+    await dbConnect();
+    const images = await HeroImage.find({ isVisible: true }).sort({ order: 1 }).lean();
+    if (images.length > 0) {
+      return images.map((img) => img.imageUrl);
+    }
+    return [DEFAULT_BG];
+  } catch {
+    return [DEFAULT_BG];
+  }
+}
 
-        <h1 className={`heading-hero ${styles.title} reveal reveal-delay-1`}>
-          Protecting Nature.<br />
-          <span className="italic-accent">Empowering People.</span><br />
-          Creating Impact.
-        </h1>
-
-        <p className={`${styles.subtitle} reveal reveal-delay-2`}>
-          The witness of truth — committed to protecting nature, empowering communities and acting with compassion across every initiative we undertake.
-        </p>
-
-        <div className={`${styles.ctas} reveal reveal-delay-3`}>
-          <Link href="/donate" className="btn btn--gold btn--lg">
-            Donate Now
-          </Link>
-          <Link href="/our-work" className="btn btn--glass btn--lg">
-            Explore Our Work
-          </Link>
-        </div>
-      </div>
-
-      {/* Floating Stats Bar */}
-      <div className={`${styles.statsBar} reveal reveal-delay-3`}>
-        <div className={styles.stat}>
-          <span className={styles.statNum}>10+</span>
-          <span className={styles.statLabel}>Focus Areas</span>
-        </div>
-        <div className={styles.statDivider}></div>
-        <div className={styles.stat}>
-          <span className={styles.statNum}>2026</span>
-          <span className={styles.statLabel}>Established</span>
-        </div>
-        <div className={styles.statDivider}></div>
-        <div className={styles.stat}>
-          <span className={styles.statNum}>∞</span>
-          <span className={styles.statLabel}>Compassion</span>
-        </div>
-      </div>
-    </section>
-  );
+export default async function HeroSection() {
+  const images = await getHeroImages();
+  return <ClientHeroSection images={images} />;
 }

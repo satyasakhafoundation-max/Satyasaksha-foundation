@@ -1,10 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 
+const isImageIcon = (icon) => typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('data:image'));
+
 export default function AdminFocusAreasPage() {
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(null);
+  const [uploading, setUploading] = useState(null);
   const [msg, setMsg] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
   const [newArea, setNewArea] = useState({ title: '', icon: '', description: '', color: '#1B4332' });
@@ -57,7 +60,7 @@ export default function AdminFocusAreasPage() {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      const payload = { ...newArea, link: `/our-work#${newArea.title.toLowerCase().replace(/\s+/g, '-')}`, order: areas.length + 1 };
+      const payload = { ...newArea, link: '/news', order: areas.length + 1 };
       const res = await fetch('/api/admin/focus-areas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error((await res.json()).error);
       showMessage('Added successfully!');
@@ -77,6 +80,32 @@ export default function AdminFocusAreasPage() {
     });
   };
 
+  const uploadIcon = async (file, folder = 'focus-areas') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', folder);
+    const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+    return (await res.json()).imageUrl;
+  };
+
+  const handleIconUpload = async (index, file) => {
+    if (!file) return;
+    setUploading(index);
+    try {
+      const imageUrl = await uploadIcon(file);
+      if (index === 'new') {
+        setNewArea(p => ({ ...p, icon: imageUrl }));
+      } else {
+        updateLocal(index, 'icon', imageUrl);
+      }
+      showMessage('Icon uploaded — remember to hit Save.');
+    } catch (err) {
+      showMessage(err.message || 'Icon upload failed.', 'error');
+    }
+    setUploading(null);
+  };
+
   return (
     <div>
       <div style={s.header}>
@@ -94,7 +123,14 @@ export default function AdminFocusAreasPage() {
           <h3 style={s.addTitle}>New Focus Area</h3>
           <div style={s.formGrid}>
             <input required placeholder="Title (e.g. Healthcare)" value={newArea.title} onChange={e => setNewArea(p => ({ ...p, title: e.target.value }))} style={s.input} />
-            <input required placeholder="Icon (emoji)" value={newArea.icon} onChange={e => setNewArea(p => ({ ...p, icon: e.target.value }))} style={s.input} />
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <input placeholder="Icon (emoji)" value={isImageIcon(newArea.icon) ? '' : newArea.icon} onChange={e => setNewArea(p => ({ ...p, icon: e.target.value }))} style={{ ...s.input, flex: 1 }} />
+              <label style={s.uploadBtn}>
+                {uploading === 'new' ? '…' : (isImageIcon(newArea.icon) ? '🖼 Change' : '⬆ Upload')}
+                <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" style={{ display: 'none' }} onChange={e => handleIconUpload('new', e.target.files?.[0])} />
+              </label>
+              {isImageIcon(newArea.icon) && <img src={newArea.icon} alt="" style={s.iconPreview} />}
+            </div>
             <input required placeholder="Description" value={newArea.description} onChange={e => setNewArea(p => ({ ...p, description: e.target.value }))} style={{ ...s.input, gridColumn: '1 / -1' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <label style={s.label}>Card Color</label>
@@ -114,14 +150,33 @@ export default function AdminFocusAreasPage() {
           {areas.map((area, i) => (
             <div key={area._id} style={{ ...s.card, opacity: area.isVisible ? 1 : 0.5 }}>
               <div style={s.cardLeft}>
-                <span style={s.icon}>{area.icon}</span>
+                <span style={s.icon}>
+                  {isImageIcon(area.icon) ? <img src={area.icon} alt="" style={s.iconImg} /> : area.icon}
+                </span>
+                <label style={s.uploadBtnSmall}>
+                  {uploading === i ? '…' : '⬆'}
+                  <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" style={{ display: 'none' }} onChange={e => handleIconUpload(i, e.target.files?.[0])} />
+                </label>
                 <div style={{ ...s.colorDot, background: area.color }} />
               </div>
               <div style={s.cardBody}>
                 <input style={s.inputInline} value={area.title} onChange={e => updateLocal(i, 'title', e.target.value)} />
                 <input style={s.inputSmall} value={area.description} onChange={e => updateLocal(i, 'description', e.target.value)} />
+                <input
+                  style={{ ...s.inputSmall, fontSize: '0.8rem' }}
+                  placeholder="Icon (emoji) — or use ⬆ to upload an image"
+                  value={isImageIcon(area.icon) ? '' : (area.icon || '')}
+                  onChange={e => updateLocal(i, 'icon', e.target.value)}
+                />
               </div>
               <div style={s.cardActions}>
+                <button
+                  onClick={() => updateLocal(i, 'cardStyle', area.cardStyle === 'translucent' ? 'solid' : 'translucent')}
+                  style={{ ...s.toggleBtn, ...(area.cardStyle === 'translucent' ? s.toggleVisible : s.toggleHidden) }}
+                  title="Toggle a translucent (frosted glass) card style on the homepage"
+                >
+                  {area.cardStyle === 'translucent' ? '🧊 Translucent' : '◻ Solid'}
+                </button>
                 <button onClick={() => handleToggle(area)} style={{ ...s.toggleBtn, ...(area.isVisible ? s.toggleVisible : s.toggleHidden) }}>
                   {area.isVisible ? '👁 Visible' : '🚫 Hidden'}
                 </button>
@@ -168,4 +223,8 @@ const s = {
   cancelBtn: { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 20px', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600' },
   deleteBtn: { padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', color: '#f87171', cursor: 'pointer', fontSize: '0.9rem', transition: 'all 0.2s' },
   loadText: { color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', fontSize: '1.1rem' },
+  uploadBtn: { display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '14px 16px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '10px', color: '#D4AF37', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', whiteSpace: 'nowrap' },
+  uploadBtnSmall: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '8px', color: '#D4AF37', cursor: 'pointer', fontSize: '0.85rem' },
+  iconPreview: { width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' },
+  iconImg: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '16px' },
 };

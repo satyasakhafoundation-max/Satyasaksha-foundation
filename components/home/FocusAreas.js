@@ -1,16 +1,23 @@
-// Server Component — fetches from DB with 60s revalidation cache
+// Server Component — queries the DB directly, cached for 60s
 import ClientFocusAreas from './ClientFocusAreas';
+import dbConnect from '@/lib/mongodb';
+import FocusArea from '@/models/FocusArea';
+
+export const revalidate = 60;
 
 async function getFocusAreas() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/admin/focus-areas`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) throw new Error('Failed to fetch');
-    return res.json();
+    await dbConnect();
+    const areas = await FocusArea.find({ isVisible: true })
+      .sort({ order: 1 })
+      .lean();
+
+    return areas.map((area) => ({
+      ...area,
+      _id: area._id.toString(),
+    }));
   } catch {
-    // Fallback to local JSON
+    // Fallback to local JSON if DB is not available
     return (await import('@/data/focus-areas.json')).default;
   }
 }

@@ -1,8 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import FocusArea from '@/models/FocusArea';
 
@@ -25,10 +24,8 @@ export async function GET() {
 
 // POST /api/admin/focus-areas - admin only
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { session, error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -46,10 +43,8 @@ export async function POST(request) {
 
 // PUT /api/admin/focus-areas - admin only
 export async function PUT(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { session, error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();
@@ -73,10 +68,8 @@ export async function PUT(request) {
 
 // DELETE /api/admin/focus-areas?id=xxx - admin only
 export async function DELETE(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { session, error } = await requireAdmin();
+  if (error) return error;
 
   try {
     await dbConnect();

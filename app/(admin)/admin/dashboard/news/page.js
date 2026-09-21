@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 
 const CATEGORIES = ['Environment', 'Animal Welfare', 'Community', 'Wildlife', 'Foundation', 'Education', 'Other'];
 
-const emptyForm = { title: '', excerpt: '', content: '', category: 'Foundation', imageUrl: '', author: 'Satyasaksha Foundation', isPublished: false };
+const emptyForm = { title: '', excerpt: '', content: '', category: 'Foundation', imageUrl: '', images: [], author: 'Satyasaksha Foundation', isPublished: false };
 
 export default function AdminNewsPage() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(null);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const [msg, setMsg] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingArticle, setEditingArticle] = useState(null);
@@ -38,8 +39,33 @@ export default function AdminNewsPage() {
 
   const handleOpenEdit = (article) => {
     setEditingArticle(article);
-    setForm({ title: article.title, excerpt: article.excerpt, content: article.content || '', category: article.category, imageUrl: article.imageUrl || '', author: article.author || '', isPublished: article.isPublished });
+    setForm({ title: article.title, excerpt: article.excerpt, content: article.content || '', category: article.category, imageUrl: article.imageUrl || '', images: article.images || [], author: article.author || '', isPublished: article.isPublished });
     setShowForm(true);
+  };
+
+  const handleGalleryUpload = async (files) => {
+    if (!files || files.length === 0) return;
+    setUploadingGallery(true);
+    try {
+      const uploaded = [];
+      for (const file of Array.from(files)) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', 'news');
+        const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error((await res.json()).error || 'Upload failed');
+        uploaded.push((await res.json()).imageUrl);
+      }
+      setForm((prev) => ({ ...prev, images: [...prev.images, ...uploaded] }));
+      showMessage(`${uploaded.length} image(s) uploaded — remember to save.`);
+    } catch (err) {
+      showMessage(err.message || 'Image upload failed.', 'error');
+    }
+    setUploadingGallery(false);
+  };
+
+  const handleRemoveGalleryImage = (index) => {
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
   };
 
   const handleFormChange = (e) => {
@@ -130,6 +156,23 @@ export default function AdminNewsPage() {
             <div style={s.field}>
               <label style={s.label}>Image URL</label>
               <input name="imageUrl" value={form.imageUrl} onChange={handleFormChange} style={s.input} placeholder="https://... (leave blank for default)" />
+            </div>
+            <div style={s.field}>
+              <label style={s.label}>Story Images (for the &quot;View Images&quot; gallery on the article)</label>
+              <label style={s.uploadBtn}>
+                {uploadingGallery ? 'Uploading…' : '⬆ Upload Images'}
+                <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp" multiple style={{ display: 'none' }} onChange={e => handleGalleryUpload(e.target.files)} />
+              </label>
+              {form.images.length > 0 && (
+                <div style={s.galleryPreviewGrid}>
+                  {form.images.map((img, i) => (
+                    <div key={i} style={s.galleryPreviewItem}>
+                      <img src={img} alt="" style={s.galleryPreviewImg} />
+                      <button type="button" onClick={() => handleRemoveGalleryImage(i)} style={s.galleryPreviewRemove}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={s.field}>
               <label style={s.label}>Author</label>
@@ -247,4 +290,9 @@ const s = {
   confirmText: { color: '#f87171', fontSize: '0.8rem', fontWeight: '600' },
   confirmYes: { background: '#ef4444', border: 'none', borderRadius: '6px', color: '#fff', padding: '4px 10px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' },
   confirmNo: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'rgba(255,255,255,0.6)', padding: '4px 10px', cursor: 'pointer', fontSize: '0.8rem' },
+  uploadBtn: { display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '12px 18px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '10px', color: '#D4AF37', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', width: 'fit-content' },
+  galleryPreviewGrid: { display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' },
+  galleryPreviewItem: { position: 'relative', width: '72px', height: '72px' },
+  galleryPreviewImg: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' },
+  galleryPreviewRemove: { position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px', borderRadius: '50%', background: '#ef4444', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.65rem', display: 'flex', alignItems: 'center', justifyContent: 'center' },
 };

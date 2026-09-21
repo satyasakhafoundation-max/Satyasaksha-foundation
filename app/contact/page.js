@@ -1,12 +1,16 @@
 'use client';
-import { useReveal } from '@/hooks/useReveal';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
-export default function ContactPage() {
-  useReveal();
+const VALID_SUBJECTS = ['general', 'volunteer', 'partner', 'membership', 'rescue'];
 
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+function ContactContent() {
+  const searchParams = useSearchParams();
+  const presetSubject = searchParams.get('subject');
+  const initialSubject = VALID_SUBJECTS.includes(presetSubject) ? presetSubject : '';
+
+  const [form, setForm] = useState({ name: '', email: '', subject: initialSubject, message: '' });
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -117,6 +121,7 @@ export default function ContactPage() {
                     <option value="general">General Inquiry</option>
                     <option value="volunteer">Volunteering</option>
                     <option value="partner">Partnership</option>
+                    <option value="membership">Foundation Membership</option>
                     <option value="rescue">Animal Rescue Report</option>
                   </select>
                 </div>
@@ -141,6 +146,14 @@ export default function ContactPage() {
       </section>
 
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+      <ContactContent />
+    </Suspense>
   );
 }
 

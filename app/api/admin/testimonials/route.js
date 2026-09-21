@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Testimonial from '@/models/Testimonial';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error) return error;
   try {
     await dbConnect();
     const items = await Testimonial.find({}).sort({ order: 1, createdAt: -1 }).lean();
@@ -17,8 +16,8 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error) return error;
   try {
     await dbConnect();
     const body = await request.json();
@@ -28,8 +27,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error) return error;
   try {
     await dbConnect();
     const { _id, ...update } = await request.json();
@@ -40,13 +39,14 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { session, error } = await requireAdmin();
+  if (error) return error;
   try {
     await dbConnect();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    await Testimonial.findByIdAndDelete(id);
+    const item = await Testimonial.findByIdAndDelete(id);
+    if (!item) return NextResponse.json({ error: 'Not found.' }, { status: 404 });
     return NextResponse.json({ success: true });
   } catch { return NextResponse.json({ error: 'Failed to delete.' }, { status: 500 }); }
 }
