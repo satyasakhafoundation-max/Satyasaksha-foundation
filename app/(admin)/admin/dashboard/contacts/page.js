@@ -1,18 +1,25 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { PageHeader, Card, Button, Badge, ConfirmButton, useToast, SkeletonList, EmptyState, SearchInput, Pagination } from '@/components/admin/ui';
+import styles from './page.module.css';
 
 const SUBJECT_LABELS = {
   general: 'General Inquiry',
   volunteer: 'Volunteering',
   partner: 'Partnership',
+  membership: 'Foundation Membership',
   rescue: 'Animal Rescue Report',
 };
+
+const PAGE_SIZE = 10;
 
 export default function AdminContactsPage() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
-  const [msg, setMsg] = useState(null);
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const showToast = useToast();
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -24,29 +31,32 @@ export default function AdminContactsPage() {
 
   useEffect(() => { fetchMessages(); }, []);
 
-  const showMessage = (text, type = 'success') => {
-    setMsg({ text, type });
-    setTimeout(() => setMsg(null), 3000);
-  };
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return messages;
+    return messages.filter((m) => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.message.toLowerCase().includes(q));
+  }, [messages, query]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleToggleRead = async (item) => {
     try {
       await fetch('/api/contact', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: item._id, isRead: !item.isRead }) });
       fetchMessages();
     } catch {
-      showMessage('Failed to update.', 'error');
+      showToast('Failed to update.', 'error');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this message? This cannot be undone.')) return;
     try {
       const res = await fetch(`/api/contact?id=${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
-      showMessage('Message deleted.');
+      showToast('Message deleted.');
       fetchMessages();
     } catch {
-      showMessage('Failed to delete.', 'error');
+      showToast('Failed to delete.', 'error');
     }
   };
 
@@ -54,95 +64,58 @@ export default function AdminContactsPage() {
 
   return (
     <div>
-      <div style={s.header}>
-        <div>
-          <h1 style={s.title}>
-            📬 Messages
-            {unreadCount > 0 && <span style={s.unreadBadge}>{unreadCount} unread</span>}
-          </h1>
-          <p style={s.sub}>Contact form submissions from visitors. Click a message to expand and view the full content.</p>
-        </div>
+      <PageHeader
+        icon="📬"
+        title={<>Messages{unreadCount > 0 && <Badge variant="gold"> {unreadCount} unread</Badge>}</>}
+        subtitle="Contact form submissions from visitors. Click a message to expand and view the full content."
+      />
+
+      <div className={styles.toolbar}>
+        <SearchInput value={query} onChange={(v) => { setQuery(v); setPage(1); }} placeholder="Search messages…" />
       </div>
 
-      {msg && <div style={{ ...s.msg, ...(msg.type === 'error' ? s.msgError : s.msgSuccess) }}>{msg.text}</div>}
-
-      {loading ? (
-        <p style={s.loadText}>Loading messages…</p>
-      ) : messages.length === 0 ? (
-        <div style={s.emptyState}>
-          <p style={{ fontSize: '2.5rem', marginBottom: '12px' }}>📭</p>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1rem' }}>No contact messages yet.</p>
-        </div>
+      {loading ? <SkeletonList count={4} /> : filtered.length === 0 ? (
+        <EmptyState icon="📭" title={query ? 'No messages found' : 'No contact messages yet'} />
       ) : (
-        <div style={s.list}>
-          {messages.map((item) => (
-            <div key={item._id} style={{ ...s.card, ...(item.isRead ? {} : s.cardUnread) }}>
-              <div style={s.cardTop} onClick={() => setExpanded(expanded === item._id ? null : item._id)}>
-                <div style={s.cardLeft}>
-                  {!item.isRead && <div style={s.unreadDot} />}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                      <span style={s.senderName}>{item.name}</span>
-                      <span style={s.subjectTag}>{SUBJECT_LABELS[item.subject] || item.subject}</span>
+        <>
+          <div className={styles.list}>
+            {pageItems.map((item) => (
+              <Card key={item._id} className={`${styles.card} ${!item.isRead ? styles.cardUnread : ''}`} style={{ padding: 0 }}>
+                <div className={styles.cardTop} onClick={() => setExpanded(expanded === item._id ? null : item._id)}>
+                  <div className={styles.cardLeft}>
+                    {!item.isRead && <div className={styles.unreadDot} />}
+                    <div>
+                      <div className={styles.senderRow}>
+                        <span className={styles.senderName}>{item.name}</span>
+                        <Badge variant="neutral">{SUBJECT_LABELS[item.subject] || item.subject}</Badge>
+                      </div>
+                      <div className={styles.senderEmail}>{item.email}</div>
                     </div>
-                    <div style={s.senderEmail}>{item.email}</div>
+                  </div>
+                  <div className={styles.cardRight}>
+                    <span className={styles.dateText}>{new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    <span className={styles.chevron}>{expanded === item._id ? '▲' : '▼'}</span>
                   </div>
                 </div>
-                <div style={s.cardRight}>
-                  <span style={s.dateText}>{new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                  <span style={s.chevron}>{expanded === item._id ? '▲' : '▼'}</span>
-                </div>
-              </div>
 
-              {expanded === item._id && (
-                <div style={s.cardBody}>
-                  <div style={s.messageBox}>
-                    <p style={s.messageText}>{item.message}</p>
+                {expanded === item._id && (
+                  <div className={styles.cardBody}>
+                    <div className={styles.messageBox}>
+                      <p className={styles.messageText}>{item.message}</p>
+                    </div>
+                    <div className={styles.actions}>
+                      <a href={`mailto:${item.email}`} className={styles.replyBtn}>✉ Reply via Email</a>
+                      <Button variant="ghost" size="sm" onClick={() => handleToggleRead(item)}>{item.isRead ? '○ Mark Unread' : '✓ Mark Read'}</Button>
+                      <ConfirmButton onConfirm={() => handleDelete(item._id)} label="🗑 Delete" />
+                    </div>
                   </div>
-                  <div style={s.actions}>
-                    <a href={`mailto:${item.email}`} style={s.replyBtn}>✉ Reply via Email</a>
-                    <button onClick={() => handleToggleRead(item)} style={s.readBtn}>
-                      {item.isRead ? '○ Mark Unread' : '✓ Mark Read'}
-                    </button>
-                    <button onClick={() => handleDelete(item._id)} style={s.deleteBtn}>🗑 Delete</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                )}
+              </Card>
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        </>
       )}
     </div>
   );
 }
-
-const s = {
-  header: { marginBottom: '40px' },
-  title: { color: '#fff', fontSize: '2rem', fontWeight: '700', margin: '0 0 8px', letterSpacing: '-0.5px', display: 'flex', alignItems: 'center', gap: '14px' },
-  unreadBadge: { fontSize: '0.8rem', fontWeight: '700', background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.3)', color: '#D4AF37', padding: '4px 12px', borderRadius: '99px' },
-  sub: { color: 'rgba(255,255,255,0.6)', margin: 0, fontSize: '1rem' },
-  msg: { borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', fontSize: '0.9rem', fontWeight: '500' },
-  msgSuccess: { background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', color: '#34d399' },
-  msgError: { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' },
-  emptyState: { textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' },
-  loadText: { color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', fontSize: '1.1rem' },
-  list: { display: 'flex', flexDirection: 'column', gap: '12px' },
-  card: { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '14px', overflow: 'hidden', transition: 'all 0.2s' },
-  cardUnread: { borderColor: 'rgba(212,175,55,0.2)', background: 'rgba(212,175,55,0.03)' },
-  cardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', cursor: 'pointer', gap: '16px' },
-  cardLeft: { display: 'flex', alignItems: 'center', gap: '14px', flex: 1 },
-  unreadDot: { width: '8px', height: '8px', borderRadius: '50%', background: '#D4AF37', flexShrink: 0, boxShadow: '0 0 8px rgba(212,175,55,0.5)' },
-  senderName: { color: '#fff', fontWeight: '700', fontSize: '1rem' },
-  subjectTag: { fontSize: '0.75rem', fontWeight: '600', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', padding: '3px 10px', borderRadius: '99px' },
-  senderEmail: { color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '4px' },
-  cardRight: { display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 },
-  dateText: { color: 'rgba(255,255,255,0.35)', fontSize: '0.82rem' },
-  chevron: { color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem' },
-  cardBody: { padding: '0 24px 24px', borderTop: '1px solid rgba(255,255,255,0.05)' },
-  messageBox: { background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '20px', marginTop: '20px', marginBottom: '20px' },
-  messageText: { color: 'rgba(255,255,255,0.85)', fontSize: '0.95rem', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 },
-  actions: { display: 'flex', gap: '10px', flexWrap: 'wrap' },
-  replyBtn: { padding: '10px 18px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: '8px', color: '#D4AF37', fontWeight: '600', fontSize: '0.85rem', textDecoration: 'none', transition: 'all 0.2s' },
-  readBtn: { padding: '10px 18px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' },
-  deleteBtn: { padding: '10px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#f87171', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' },
-};

@@ -1,59 +1,53 @@
 'use client';
 import { useState, useEffect } from 'react';
+import {
+  PageHeader, Card, Button, Field, Input, Textarea, Toggle,
+  ConfirmButton, ImageUploader, Modal, ReorderableList, useToast, SkeletonList, EmptyState,
+} from '@/components/admin/ui';
+import styles from './page.module.css';
 
-const emptyForm = { name: '', title: '', quote: '', avatarUrl: '', isVisible: true, order: 0 };
-
-const CONFIRM_STYLES = {
-  inlineConfirm: { display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '8px', padding: '4px 8px' },
-  confirmText: { color: '#f87171', fontSize: '0.8rem', fontWeight: '600' },
-  confirmYes: { background: '#ef4444', border: 'none', borderRadius: '6px', color: '#fff', padding: '4px 10px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '700' },
-  confirmNo: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'rgba(255,255,255,0.6)', padding: '4px 10px', cursor: 'pointer', fontSize: '0.8rem' },
-};
+const emptyForm = { name: '', title: '', quote: '', avatarUrl: '' };
 
 export default function AdminTestimonialsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(null);
-  const [msg, setMsg] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
-  const [confirmDelete, setConfirmDelete] = useState(null);
+  const showToast = useToast();
 
   const fetchItems = async () => {
     setLoading(true);
     const res = await fetch('/api/admin/testimonials');
     const data = await res.json();
-    setItems(Array.isArray(data) ? data : []);
+    setItems(Array.isArray(data) ? data.sort((a, b) => a.order - b.order) : []);
     setLoading(false);
   };
 
   useEffect(() => { fetchItems(); }, []);
 
-  const showMessage = (text, type = 'success') => {
-    setMsg({ text, type });
-    setTimeout(() => setMsg(null), 3500);
-  };
-
-  const handleOpenNew = () => { setEditingItem(null); setForm(emptyForm); setShowForm(true); };
-  const handleOpenEdit = (item) => { setEditingItem(item); setForm({ name: item.name, title: item.title, quote: item.quote, avatarUrl: item.avatarUrl || '', isVisible: item.isVisible, order: item.order }); setShowForm(true); };
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+  const openNew = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
+  const openEdit = (item) => {
+    setEditing(item);
+    setForm({ name: item.name, title: item.title, quote: item.quote, avatarUrl: item.avatarUrl || '' });
+    setModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving('form');
     try {
-      const method = editingItem ? 'PUT' : 'POST';
-      const body = editingItem ? { _id: editingItem._id, ...form } : form;
-      const res = await fetch('/api/admin/testimonials', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const method = editing ? 'PUT' : 'POST';
+      const payload = editing ? { _id: editing._id, ...form } : { ...form, order: items.length + 1, isVisible: true };
+      const res = await fetch('/api/admin/testimonials', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error((await res.json()).error);
-      showMessage(editingItem ? 'Testimonial updated!' : 'Testimonial added!');
-      setShowForm(false);
+      showToast(editing ? 'Testimonial updated!' : 'Testimonial added!');
+      setModalOpen(false);
       fetchItems();
-    } catch (err) { showMessage(err.message || 'Failed.', 'error'); }
+    } catch (err) {
+      showToast(err.message || 'Failed to save.', 'error');
+    }
     setSaving(null);
   };
 
@@ -62,159 +56,94 @@ export default function AdminTestimonialsPage() {
     try {
       await fetch('/api/admin/testimonials', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, isVisible: !item.isVisible }) });
       fetchItems();
-    } catch { showMessage('Failed to update.', 'error'); }
+    } catch {
+      showToast('Failed to update.', 'error');
+    }
     setSaving(null);
   };
 
   const handleDelete = async (id) => {
-    setSaving('del-' + id);
+    setSaving(id);
     try {
       const res = await fetch(`/api/admin/testimonials?id=${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Delete failed');
-      showMessage('Deleted.');
-      setConfirmDelete(null);
+      showToast('Deleted.');
       fetchItems();
-    } catch (err) { showMessage(err.message || 'Failed to delete.', 'error'); }
+    } catch (err) {
+      showToast(err.message || 'Failed to delete.', 'error');
+    }
     setSaving(null);
+  };
+
+  const handleReorder = async (reordered) => {
+    setItems(reordered);
+    await Promise.all(reordered.map((item, i) =>
+      fetch('/api/admin/testimonials', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, order: i + 1 }) })
+    ));
+    showToast('Order saved.');
   };
 
   return (
     <div>
-      <div style={s.header}>
-        <div>
-          <h1 style={s.title}>💬 Testimonials</h1>
-          <p style={s.sub}>Manage the quotes shown in the Voices of Impact section on the homepage.</p>
-        </div>
-        <button style={s.addBtn} onClick={handleOpenNew}>+ Add Testimonial</button>
-      </div>
+      <PageHeader
+        icon="💬"
+        title="Testimonials"
+        subtitle="Manage the quotes shown in the Voices of Impact section on the homepage."
+        action={<Button onClick={openNew}>+ Add Testimonial</Button>}
+      />
 
-      {msg && <div style={{ ...s.msg, ...(msg.type === 'error' ? s.msgError : s.msgSuccess) }}>{msg.text}</div>}
-
-      {showForm && (
-        <div style={s.formWrap}>
-          <div style={s.formHeader}>
-            <h3 style={s.formTitle}>{editingItem ? 'Edit Testimonial' : 'New Testimonial'}</h3>
-            <button onClick={() => setShowForm(false)} style={s.closeBtn}>✕</button>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Testimonial' : 'New Testimonial'}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.fieldRow}>
+            <Field label="Name" required>
+              <Input required placeholder="e.g. Dr. Priya Sharma" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+            </Field>
+            <Field label="Title / Role" required>
+              <Input required placeholder="e.g. Wildlife Researcher, WWF India" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} />
+            </Field>
           </div>
-          <form onSubmit={handleSubmit} style={s.form}>
-            <div style={s.fieldRow}>
-              <div style={s.field}>
-                <label style={s.label}>Name *</label>
-                <input name="name" required value={form.name} onChange={handleChange} style={s.input} placeholder="e.g. Dr. Priya Sharma" />
-              </div>
-              <div style={s.field}>
-                <label style={s.label}>Title / Role *</label>
-                <input name="title" required value={form.title} onChange={handleChange} style={s.input} placeholder="e.g. Wildlife Researcher, WWF India" />
-              </div>
-            </div>
-            <div style={s.field}>
-              <label style={s.label}>Quote * (max 500 characters)</label>
-              <textarea name="quote" required rows={4} maxLength={500} value={form.quote} onChange={handleChange} style={{ ...s.input, resize: 'vertical' }} placeholder="Their testimonial quote..." />
-              <span style={s.charCount}>{form.quote.length}/500</span>
-            </div>
-            <div style={s.fieldRow}>
-              <div style={s.field}>
-                <label style={s.label}>Avatar Image URL (optional)</label>
-                <input name="avatarUrl" value={form.avatarUrl} onChange={handleChange} style={s.input} placeholder="https://... (leave blank for initials)" />
-              </div>
-              <div style={s.field}>
-                <label style={s.label}>Display Order</label>
-                <input name="order" type="number" value={form.order} onChange={handleChange} style={s.input} min="0" />
-              </div>
-            </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-              <input type="checkbox" name="isVisible" checked={form.isVisible} onChange={handleChange} style={{ width: '18px', height: '18px', accentColor: '#D4AF37' }} />
-              <span style={{ color: '#fff', fontWeight: '600', fontSize: '0.95rem' }}>Visible on website</span>
-            </label>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button type="submit" disabled={saving === 'form'} style={{ ...s.saveBtn, opacity: saving === 'form' ? 0.7 : 1 }}>{saving === 'form' ? 'Saving…' : editingItem ? 'Save Changes' : 'Add Testimonial'}</button>
-              <button type="button" onClick={() => setShowForm(false)} style={s.cancelBtn}>Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
+          <Field label="Quote" required hint={`${form.quote.length}/500 characters`}>
+            <Textarea required rows={4} maxLength={500} placeholder="Their testimonial quote..." value={form.quote} onChange={(e) => setForm((p) => ({ ...p, quote: e.target.value }))} />
+          </Field>
+          <ImageUploader
+            folder="about"
+            shape="circle"
+            label="Upload Avatar (optional — falls back to initials)"
+            value={form.avatarUrl}
+            onChange={(url) => setForm((p) => ({ ...p, avatarUrl: url }))}
+          />
+          <div className={styles.modalActions}>
+            <Button type="submit" loading={saving === 'form'}>{editing ? 'Save Changes' : 'Add Testimonial'}</Button>
+            <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>
+          </div>
+        </form>
+      </Modal>
 
-      {loading ? <p style={s.loadText}>Loading…</p> : items.length === 0 ? (
-        <div style={s.emptyState}>
-          <p style={{ fontSize: '2rem', marginBottom: '12px' }}>💬</p>
-          <p style={{ color: 'rgba(255,255,255,0.6)' }}>No testimonials yet. Click <strong style={{ color: '#D4AF37' }}>+ Add Testimonial</strong> to create one.</p>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '8px' }}>The homepage will show built-in fallback quotes until you add real ones.</p>
-        </div>
+      {loading ? <SkeletonList count={3} /> : items.length === 0 ? (
+        <EmptyState icon="💬" title="No testimonials yet" description="The homepage shows built-in fallback quotes until you add real ones." />
       ) : (
-        <div style={s.list}>
-          {items.map((item) => (
-            <div key={item._id} style={{ ...s.card, opacity: item.isVisible ? 1 : 0.5 }}>
-              <div style={s.cardLeft}>
-                <div style={s.avatar}>
-                  {item.avatarUrl
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    ? <img src={item.avatarUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                    : <span style={s.initials}>{item.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()}</span>
-                  }
-                </div>
-                <div>
-                  <p style={s.personName}>{item.name}</p>
-                  <p style={s.personTitle}>{item.title}</p>
-                </div>
+        <ReorderableList items={items} onReorder={handleReorder} keyField="_id" renderItem={(item) => (
+          <Card dimmed={!item.isVisible} className={styles.card}>
+            <div className={styles.cardTop}>
+              <div className={styles.avatar}>
+                {item.avatarUrl
+                  ? <img src={item.avatarUrl} alt={item.name} className={styles.avatarImg} />
+                  : <span className={styles.initials}>{item.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}</span>}
               </div>
-              <p style={s.quoteText}>&quot;{item.quote}&quot;</p>
-              <div style={s.cardActions}>
-                <button onClick={() => handleOpenEdit(item)} style={s.editBtn}>✏ Edit</button>
-                <button onClick={() => handleToggle(item)} disabled={saving === item._id} style={{ ...s.toggleBtn, ...(item.isVisible ? s.toggleVisible : s.toggleHidden) }}>
-                  {item.isVisible ? '👁 Visible' : '🚫 Hidden'}
-                </button>
-                {confirmDelete === item._id ? (
-                  <div style={CONFIRM_STYLES.inlineConfirm}>
-                    <span style={CONFIRM_STYLES.confirmText}>Sure?</span>
-                    <button onClick={() => handleDelete(item._id)} disabled={saving === 'del-' + item._id} style={CONFIRM_STYLES.confirmYes}>{saving === 'del-' + item._id ? '…' : 'Yes'}</button>
-                    <button onClick={() => setConfirmDelete(null)} style={CONFIRM_STYLES.confirmNo}>No</button>
-                  </div>
-                ) : (
-                  <button onClick={() => setConfirmDelete(item._id)} style={s.deleteBtn}>🗑</button>
-                )}
+              <div>
+                <p className={styles.personName}>{item.name}</p>
+                <p className={styles.personTitle}>{item.title}</p>
               </div>
             </div>
-          ))}
-        </div>
+            <p className={styles.quoteText}>&quot;{item.quote}&quot;</p>
+            <div className={styles.cardActions}>
+              <Button variant="ghost" size="sm" onClick={() => openEdit(item)}>✏ Edit</Button>
+              <Toggle active={item.isVisible} onClick={() => handleToggle(item)} disabled={saving === item._id} />
+              <ConfirmButton onConfirm={() => handleDelete(item._id)} loading={saving === item._id} />
+            </div>
+          </Card>
+        )} />
       )}
     </div>
   );
 }
-
-const s = {
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', gap: '16px', flexWrap: 'wrap' },
-  title: { color: '#fff', fontSize: '2rem', fontWeight: '700', margin: '0 0 8px', letterSpacing: '-0.5px' },
-  sub: { color: 'rgba(255,255,255,0.6)', margin: 0, fontSize: '1rem' },
-  addBtn: { background: 'linear-gradient(135deg, #D4AF37, #B8960C)', color: '#0a110a', border: 'none', borderRadius: '10px', padding: '12px 24px', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 8px 20px rgba(212,175,55,0.2)', whiteSpace: 'nowrap' },
-  msg: { borderRadius: '12px', padding: '16px 20px', marginBottom: '24px', fontSize: '0.9rem', fontWeight: '500' },
-  msgSuccess: { background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', color: '#34d399' },
-  msgError: { background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' },
-  formWrap: { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(212,175,55,0.15)', borderRadius: '16px', padding: '32px', marginBottom: '32px', backdropFilter: 'blur(10px)' },
-  formHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
-  formTitle: { color: '#D4AF37', fontWeight: '700', fontSize: '1.2rem', margin: 0 },
-  closeBtn: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'rgba(255,255,255,0.5)', padding: '6px 12px', cursor: 'pointer', fontSize: '1rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '20px' },
-  fieldRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' },
-  field: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  label: { color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' },
-  input: { background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '0.95rem', outline: 'none', width: '100%', boxSizing: 'border-box' },
-  charCount: { color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', textAlign: 'right' },
-  saveBtn: { background: 'linear-gradient(135deg, #D4AF37, #B8960C)', color: '#0a110a', border: 'none', borderRadius: '10px', padding: '14px 28px', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem' },
-  cancelBtn: { background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '14px 20px', cursor: 'pointer', fontSize: '0.95rem', fontWeight: '600' },
-  emptyState: { textAlign: 'center', padding: '80px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' },
-  loadText: { color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', fontSize: '1.1rem' },
-  list: { display: 'flex', flexDirection: 'column', gap: '16px' },
-  card: { background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '14px', padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '16px' },
-  cardLeft: { display: 'flex', alignItems: 'center', gap: '16px' },
-  avatar: { width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, #0D1A0D, #1A2E1A)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' },
-  initials: { color: '#D4AF37', fontWeight: '700', fontSize: '1rem' },
-  personName: { color: '#fff', fontWeight: '700', fontSize: '1rem', margin: '0 0 4px' },
-  personTitle: { color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', margin: 0 },
-  quoteText: { color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', fontStyle: 'italic', lineHeight: 1.6, borderLeft: '3px solid rgba(212,175,55,0.3)', paddingLeft: '16px', margin: 0 },
-  cardActions: { display: 'flex', gap: '10px', flexWrap: 'wrap' },
-  editBtn: { padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' },
-  toggleBtn: { padding: '8px 16px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' },
-  toggleVisible: { background: 'rgba(52,211,153,0.1)', color: '#34d399', border: '1px solid rgba(52,211,153,0.2)' },
-  toggleHidden: { background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' },
-  deleteBtn: { padding: '8px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#f87171', cursor: 'pointer', fontSize: '0.9rem' },
-};

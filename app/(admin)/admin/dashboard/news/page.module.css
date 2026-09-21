@@ -1,0 +1,61 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+.row { composes: row from '@/components/admin/ui/listLayout.module.css'; }
+.rowBody { composes: rowBody from '@/components/admin/ui/listLayout.module.css'; }
+.rowMeta { composes: rowMeta from '@/components/admin/ui/listLayout.module.css'; }
+.rowTitle { composes: rowTitle from '@/components/admin/ui/listLayout.module.css'; }
+.rowDesc { composes: rowDesc from '@/components/admin/ui/listLayout.module.css'; }
+.rowActions { composes: rowActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.publishRow {
+  padding: 16px;
+  background: rgba(212, 175, 55, 0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--gold-subtle);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.thumb {
+  width: 80px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.toolbar {
+  margin-bottom: 24px;
+}

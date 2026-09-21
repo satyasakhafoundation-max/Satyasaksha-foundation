@@ -1,0 +1,15 @@
+.row { composes: row from '@/components/admin/ui/listLayout.module.css'; }
+.rowActions { composes: rowActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.uploaderWrap {
+  max-width: 480px;
+  margin-bottom: 32px;
+}
+
+.thumb {
+  flex: 1;
+  height: 120px;
+  border-radius: var(--radius-md);
+  background-size: cover;
+  background-position: center;
+}

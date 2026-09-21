@@ -1,0 +1,156 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 48px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: -0.5px;
+}
+
+.accentText {
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sub {
+  color: var(--admin-text-muted);
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  text-decoration: none;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--admin-border-strong);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover .cardArrow {
+  transform: translateX(4px);
+}
+
+.cardSuperAdmin {
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.cardIcon {
+  font-size: 2.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--admin-border);
+}
+
+.cardIconGold {
+  color: var(--gold-subtle);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardTitle {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.cardDesc {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.cardArrow {
+  color: var(--gold-subtle);
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform var(--transition-base);
+  opacity: 0.8;
+}
+
+.noticeWrap {
+  position: relative;
+  max-width: 800px;
+}
+
+.noticeGlow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent);
+  border-radius: 24px;
+  z-index: 0;
+  filter: blur(20px);
+}
+
+.notice {
+  position: relative;
+  z-index: 1;
+  background: rgba(212, 175, 55, 0.03);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: var(--radius-xl);
+  padding: 24px 32px;
+  font-size: 0.95rem;
+  backdrop-filter: blur(10px);
+}
+
+.noticeTitle {
+  color: var(--gold-subtle);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.noticeBody {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}

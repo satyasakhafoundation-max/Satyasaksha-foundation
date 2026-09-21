@@ -1,0 +1,58 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.fieldRow3 {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon {
+  font-size: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--admin-border);
+}
+
+.value {
+  color: var(--gold-subtle);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.statLabel {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 8px;
+}

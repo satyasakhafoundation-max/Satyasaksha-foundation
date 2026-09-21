@@ -1,0 +1,12 @@
+.card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: opacity var(--transition-fast);
+}
+
+.dimmed {
+  opacity: 0.5;
+}

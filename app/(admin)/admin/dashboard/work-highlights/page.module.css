@@ -1,0 +1,8 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+.row { composes: row from '@/components/admin/ui/listLayout.module.css'; }
+.rowThumb { composes: rowThumb from '@/components/admin/ui/listLayout.module.css'; }
+.rowBody { composes: rowBody from '@/components/admin/ui/listLayout.module.css'; }
+.rowTitle { composes: rowTitle from '@/components/admin/ui/listLayout.module.css'; }
+.rowDesc { composes: rowDesc from '@/components/admin/ui/listLayout.module.css'; }
+.rowActions { composes: rowActions from '@/components/admin/ui/listLayout.module.css'; }

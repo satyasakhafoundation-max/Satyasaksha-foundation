@@ -1,0 +1,57 @@
+.trigger {
+  padding: 10px 14px;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-md);
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background var(--transition-fast);
+}
+
+.trigger:hover {
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.confirmWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-md);
+  padding: 4px 8px;
+}
+
+.confirmText {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding-left: 4px;
+}
+
+.yes {
+  background: var(--color-error);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.yes:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  color: var(--admin-text-muted);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}

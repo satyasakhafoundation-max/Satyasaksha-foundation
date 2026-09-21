@@ -1,0 +1,46 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+.row { composes: row from '@/components/admin/ui/listLayout.module.css'; }
+.rowThumb { composes: rowThumb from '@/components/admin/ui/listLayout.module.css'; }
+.rowBody { composes: rowBody from '@/components/admin/ui/listLayout.module.css'; }
+.rowMeta { composes: rowMeta from '@/components/admin/ui/listLayout.module.css'; }
+.rowTitle { composes: rowTitle from '@/components/admin/ui/listLayout.module.css'; }
+.rowActions { composes: rowActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--gold-subtle);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.price {
+  color: var(--gold-subtle);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.toolbar {
+  margin-bottom: 24px;
+}

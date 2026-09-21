@@ -1,0 +1,28 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  color: var(--admin-text);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--admin-text-muted);
+  margin: 0;
+  font-size: 1rem;
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.action {
+  flex-shrink: 0;
+}

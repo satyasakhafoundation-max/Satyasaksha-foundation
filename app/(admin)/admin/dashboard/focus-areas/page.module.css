@@ -1,0 +1,51 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+.row { composes: row from '@/components/admin/ui/listLayout.module.css'; }
+.rowIcon { composes: rowIcon from '@/components/admin/ui/listLayout.module.css'; }
+.iconImg { composes: iconImg from '@/components/admin/ui/listLayout.module.css'; }
+.rowBody { composes: rowBody from '@/components/admin/ui/listLayout.module.css'; }
+.rowTitleLine { composes: rowTitleLine from '@/components/admin/ui/listLayout.module.css'; }
+.rowTitle { composes: rowTitle from '@/components/admin/ui/listLayout.module.css'; }
+.rowDesc { composes: rowDesc from '@/components/admin/ui/listLayout.module.css'; }
+.rowActions { composes: rowActions from '@/components/admin/ui/listLayout.module.css'; }
+.dot { composes: dot from '@/components/admin/ui/listLayout.module.css'; }
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.colorSwatch {
+  height: 40px;
+  width: 64px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--admin-border);
+  background: none;
+  padding: 2px;
+}
+
+.colorValue {
+  color: var(--admin-text-muted);
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.styleRow {
+  display: flex;
+  gap: 20px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.radioLabel input {
+  accent-color: var(--gold-subtle);
+}

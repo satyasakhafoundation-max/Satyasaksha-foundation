@@ -1,0 +1,44 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast), outline var(--transition-fast);
+}
+
+.row.over {
+  outline: 2px dashed var(--gold-subtle);
+  outline-offset: 4px;
+}
+
+.row.dragging {
+  opacity: 0.4;
+}
+
+.handle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  color: var(--admin-text-faint);
+  font-size: 1.1rem;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}

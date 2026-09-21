@@ -1,0 +1,55 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+
+.logoBox {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.logoImg {
+  max-height: 40px;
+  max-width: 120px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.textLogo {
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.partnerName {
+  color: var(--admin-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.link {
+  color: rgba(212, 175, 55, 0.7);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+}

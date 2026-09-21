@@ -1,0 +1,73 @@
+.form { composes: form from '@/components/admin/ui/listLayout.module.css'; }
+.modalActions { composes: modalActions from '@/components/admin/ui/listLayout.module.css'; }
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest-dark), var(--forest-base));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.initials {
+  color: var(--gold-subtle);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.personName {
+  color: var(--admin-text);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.personTitle {
+  color: var(--admin-text-muted);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.quoteText {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.6;
+  border-left: 3px solid rgba(212, 175, 55, 0.3);
+  padding-left: 16px;
+  margin: 0;
+}
+
+.cardActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}

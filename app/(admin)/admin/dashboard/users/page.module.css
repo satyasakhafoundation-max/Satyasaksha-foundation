@@ -1,0 +1,149 @@
+.inviteBox {
+  margin-bottom: 32px;
+  border-color: rgba(212, 175, 55, 0.2);
+  background: rgba(212, 175, 55, 0.04);
+}
+
+.inviteTitle {
+  color: var(--gold-subtle);
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin: 0 0 8px;
+}
+
+.inviteSub {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.inviteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.generateBtn {
+  width: fit-content;
+}
+
+.linkBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linkLabel {
+  color: var(--color-success);
+  font-weight: 600;
+  margin: 0;
+}
+
+.linkRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.linkCode {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--admin-text);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  word-break: break-all;
+  flex: 1;
+  border: 1px solid var(--admin-border);
+}
+
+.linkWarning {
+  color: rgba(251, 191, 36, 0.8);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.loadText {
+  color: var(--admin-text-muted);
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.userCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.userLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest-dark), var(--forest-base));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.initials {
+  color: var(--gold-subtle);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.userName {
+  color: var(--admin-text);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.userEmail {
+  color: var(--admin-text-faint);
+  font-size: 0.85rem;
+  margin: 2px 0 0;
+}
+
+.userDate {
+  color: var(--admin-text-faint);
+  font-size: 0.78rem;
+  margin: 2px 0 0;
+  opacity: 0.7;
+}
+
+.userActions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
