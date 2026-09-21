@@ -2,6 +2,7 @@
 import ClientFocusAreas from './ClientFocusAreas';
 import dbConnect from '@/lib/mongodb';
 import FocusArea from '@/models/FocusArea';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -23,6 +24,6 @@ async function getFocusAreas() {
 }
 
 export default async function FocusAreas() {
-  const areas = await getFocusAreas();
-  return <ClientFocusAreas areas={areas} />;
+  const [areas, content] = await Promise.all([getFocusAreas(), getPageContent('home')]);
+  return <ClientFocusAreas areas={areas} content={content} />;
 }

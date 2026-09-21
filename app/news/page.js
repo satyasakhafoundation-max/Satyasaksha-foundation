@@ -4,6 +4,7 @@ import styles from './page.module.css';
 import dbConnect from '@/lib/mongodb';
 import NewsArticle from '@/models/NewsArticle';
 import newsStaticData from '@/data/news.json';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -58,19 +59,19 @@ async function getArticles() {
 }
 
 export default async function NewsPage() {
-  const allNews = await getArticles();
+  const [allNews, content] = await Promise.all([getArticles(), getPageContent('news')]);
 
   return (
     <div className={styles.pageWrap}>
-      
+
       {/* Page Hero */}
       <section className={styles.hero}>
-        <div className={styles.heroBg} style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1584907600572-0402b85e0503?q=80&w=2500&auto=format&fit=crop")' }}></div>
+        <div className={styles.heroBg} style={{ backgroundImage: `url(${content.heroImage})` }}></div>
         <div className={styles.heroOverlay}></div>
         <div className={`container ${styles.heroContent}`}>
-          <h1 className="heading-hero">News &amp; Updates</h1>
+          <h1 className="heading-hero">{content.heroTitle}</h1>
           <p className={styles.heroSub}>
-            Stay informed about our latest initiatives, milestones, and stories from the field.
+            {content.heroSubtitle}
           </p>
         </div>
       </section>

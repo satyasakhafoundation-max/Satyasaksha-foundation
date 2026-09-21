@@ -3,6 +3,7 @@ import ClientImpactPage from './ClientImpactPage';
 import dbConnect from '@/lib/mongodb';
 import ImpactStat from '@/models/ImpactStat';
 import WorkHighlight from '@/models/WorkHighlight';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -36,6 +37,6 @@ async function getWorkHighlights() {
 }
 
 export default async function ImpactPage() {
-  const [stats, workHighlights] = await Promise.all([getStats(), getWorkHighlights()]);
-  return <ClientImpactPage stats={stats} workHighlights={workHighlights} />;
+  const [stats, workHighlights, content] = await Promise.all([getStats(), getWorkHighlights(), getPageContent('impact')]);
+  return <ClientImpactPage stats={stats} workHighlights={workHighlights} content={content} />;
 }

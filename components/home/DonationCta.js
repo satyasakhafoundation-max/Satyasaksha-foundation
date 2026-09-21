@@ -1,14 +1,31 @@
-'use client';
+// Server Component — queries SiteSettings from DB, cached for 60s
 import Link from 'next/link';
+import dbConnect from '@/lib/mongodb';
+import SiteSettings from '@/models/SiteSettings';
 import styles from './DonationCta.module.css';
 
-export default function DonationCta() {
+export const revalidate = 60;
+
+const DEFAULT_PRESETS = [{ amount: 500 }, { amount: 1000 }, { amount: 2500 }, { amount: 5000 }];
+
+async function getPresets() {
+  try {
+    await dbConnect();
+    const settings = await SiteSettings.findOne({}).lean();
+    return settings?.donationPresets?.length ? settings.donationPresets : DEFAULT_PRESETS;
+  } catch {
+    return DEFAULT_PRESETS;
+  }
+}
+
+export default async function DonationCta() {
+  const presets = await getPresets();
 
   return (
     <section className={styles.section} id="donate-cta">
       <div className={styles.bgImage}></div>
       <div className={styles.overlay}></div>
-      
+
       <div className={`container ${styles.contentWrap}`}>
         <div className={`reveal ${styles.glassPanel}`}>
           <div className="section-header" style={{ marginBottom: 'var(--space-8)' }}>
@@ -23,10 +40,11 @@ export default function DonationCta() {
           </div>
 
           <div className={styles.presetGrid}>
-            <Link href="/donate?amount=500" className={styles.presetBtn}>₹500</Link>
-            <Link href="/donate?amount=1000" className={styles.presetBtn}>₹1,000</Link>
-            <Link href="/donate?amount=2500" className={styles.presetBtn}>₹2,500</Link>
-            <Link href="/donate?amount=5000" className={styles.presetBtn}>₹5,000</Link>
+            {presets.map((preset) => (
+              <Link key={preset.amount} href={`/donate?amount=${preset.amount}`} className={styles.presetBtn}>
+                ₹{preset.amount.toLocaleString('en-IN')}
+              </Link>
+            ))}
           </div>
 
           <div className={styles.actionWrap}>
@@ -34,7 +52,7 @@ export default function DonationCta() {
               Donate Now
             </Link>
           </div>
-          
+
           <p className={styles.note}>All donations are securely processed. Tax exemption details will be provided upon successful contribution.</p>
         </div>
       </div>

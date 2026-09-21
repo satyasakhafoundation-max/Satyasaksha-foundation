@@ -1,77 +1,35 @@
-'use client';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import styles from './Footer.module.css';
+// Server Component — queries SiteSettings from DB, cached for 60s
+import ClientFooter from './ClientFooter';
+import dbConnect from '@/lib/mongodb';
+import SiteSettings from '@/models/SiteSettings';
 
-export default function Footer() {
-  const pathname = usePathname();
+export const revalidate = 60;
 
-  // Do not render public Footer on admin routes
-  if (pathname?.startsWith('/admin')) {
-    return null;
+const DEFAULT_SETTINGS = {
+  siteName: 'Satyasaksha Foundation',
+  tagline: 'the witness of truth',
+  footerDescription: 'A non-profit organisation dedicated to protecting nature, supporting communities and empowering lives across the nation.',
+  copyrightName: 'Satyasaksha Foundation',
+  address: 'Satyasaksha Foundation\nSector 12, Dwarka\nNew Delhi, 110075, India',
+  email: 'contact@satyasakshafoundation.org',
+  phone: '+91 98765 43210',
+  facebookUrl: '',
+  instagramUrl: '',
+  twitterUrl: '',
+  linkedinUrl: '',
+};
+
+async function getSettings() {
+  try {
+    await dbConnect();
+    const settings = await SiteSettings.findOne({}).lean();
+    return settings ? { ...DEFAULT_SETTINGS, ...settings } : DEFAULT_SETTINGS;
+  } catch {
+    return DEFAULT_SETTINGS;
   }
-  return (
-    <footer className={styles.footer}>
-      <div className="container">
-        <div className={styles.top}>
-          
-          <div className={styles.brandCol}>
-            <div className={styles.logo}>
-              <span className={styles.logoText}>SATYASAKSHA</span>
-              <span className={styles.logoTagline}>the witness of truth</span>
-            </div>
-            <p className={styles.desc}>
-              A non-profit organisation dedicated to protecting nature, supporting communities and empowering lives across the nation.
-            </p>
-            <div className={styles.socials}>
-              <a href="#" aria-label="Facebook">FB</a>
-              <a href="#" aria-label="Instagram">IG</a>
-              <a href="#" aria-label="Twitter">X</a>
-              <a href="#" aria-label="LinkedIn">LI</a>
-            </div>
-          </div>
+}
 
-          <div className={styles.linksCol}>
-            <h4 className={styles.colTitle}>Foundation</h4>
-            <ul>
-              <li><Link href="/about">About Us</Link></li>
-              <li><Link href="/team">Our Team</Link></li>
-              <li><Link href="/impact">Impact &amp; Work</Link></li>
-              <li><Link href="/news">News &amp; Blogs</Link></li>
-              <li><Link href="/products">Merchandise</Link></li>
-            </ul>
-          </div>
-
-          <div className={styles.linksCol}>
-            <h4 className={styles.colTitle}>Get Involved</h4>
-            <ul>
-              <li><Link href="/donate">Donate</Link></li>
-              <li><Link href="/get-involved#volunteer">Volunteer</Link></li>
-              <li><Link href="/get-involved#partner">Partner with Us</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
-            </ul>
-          </div>
-
-          <div className={styles.contactCol}>
-            <h4 className={styles.colTitle}>Contact Us</h4>
-            <address className={styles.address}>
-              <p>Satyasaksha Foundation</p>
-              <p>New Delhi, India</p>
-              <p className={styles.email}>contact@satyasakshafoundation.org</p>
-              <p className={styles.phone}>+91 98765 43210</p>
-            </address>
-          </div>
-
-        </div>
-
-        <div className={styles.bottom}>
-          <p>&copy; {new Date().getFullYear()} Satyasaksha Foundation. All rights reserved.</p>
-          <div className={styles.legalLinks}>
-            <Link href="/privacy-policy">Privacy Policy</Link>
-            <Link href="/terms">Terms of Service</Link>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+export default async function Footer() {
+  const settings = await getSettings();
+  return <ClientFooter settings={settings} />;
 }

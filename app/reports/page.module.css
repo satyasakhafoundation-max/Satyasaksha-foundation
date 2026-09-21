@@ -161,6 +161,12 @@
   white-space: nowrap;
 }
 
+.disabledBtn {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
 /* ── CTA ── */
 .ctaSection {
   background: var(--grad-dark);

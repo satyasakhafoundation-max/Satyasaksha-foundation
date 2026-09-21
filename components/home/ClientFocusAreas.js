@@ -4,18 +4,18 @@ import styles from './FocusAreas.module.css';
 
 const isImageIcon = (icon) => typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('data:image'));
 
-export default function ClientFocusAreas({ areas }) {
+export default function ClientFocusAreas({ areas, content }) {
 
   return (
     <section className="section" id="focus-areas">
       <div className="container">
         
         <div className="section-header reveal">
-          <p className="label">What We Do</p>
+          <p className="label">{content.focusAreasLabel}</p>
           <div className="divider-gold"></div>
-          <h2 className="heading-xl">Our Areas of Work</h2>
+          <h2 className="heading-xl">{content.focusAreasHeading}</h2>
           <p className="text-muted" style={{ maxWidth: '600px', margin: 'var(--space-4) auto 0' }}>
-            Nine interconnected domains — each a critical pillar of our mission for a more just, compassionate and sustainable world.
+            {content.focusAreasIntro}
           </p>
         </div>
 

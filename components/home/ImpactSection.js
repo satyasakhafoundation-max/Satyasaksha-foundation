@@ -2,6 +2,7 @@
 import ClientImpactSection from './ClientImpactSection';
 import dbConnect from '@/lib/mongodb';
 import ImpactStat from '@/models/ImpactStat';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -21,6 +22,6 @@ async function getStats() {
 }
 
 export default async function ImpactSection() {
-  const stats = await getStats();
-  return <ClientImpactSection stats={stats} />;
+  const [stats, content] = await Promise.all([getStats(), getPageContent('home')]);
+  return <ClientImpactSection stats={stats} content={content} />;
 }

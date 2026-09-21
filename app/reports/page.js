@@ -1,12 +1,59 @@
-import reportsData from '@/data/reports.json';
+import dbConnect from '@/lib/mongodb';
+import Report from '@/models/Report';
 import styles from './page.module.css';
+
+export const revalidate = 60;
 
 export const metadata = {
   title: 'Reports & Transparency | Satyasaksha Foundation',
   description: 'Browse annual impact reports, financial statements, and project documentation from Satyasaksha Foundation. Committed to full transparency.',
 };
 
-export default function ReportsPage() {
+const DEFAULT_REPORTS = [
+  {
+    id: 'report-2025', year: '2025', title: 'Annual Impact Report 2025',
+    description: "A comprehensive overview of Satyasaksha Foundation's conservation achievements, community programs, and financial transparency for the fiscal year 2025.",
+    pdfUrl: '', highlights: ['50,000 trees planted', '12 rural schools supported', '3,200 animals treated'],
+    publishedDate: 'March 2026',
+  },
+  {
+    id: 'report-2024', year: '2024', title: 'Annual Impact Report 2024',
+    description: 'Documenting our milestones in wildlife conservation, animal welfare, and sustainable education outreach across 9 focus areas throughout 2024.',
+    pdfUrl: '', highlights: ['8 biodiversity surveys', '600+ volunteers mobilised', '₹2.4 Cr raised'],
+    publishedDate: 'March 2025',
+  },
+  {
+    id: 'report-2023', year: '2023', title: 'Annual Impact Report 2023',
+    description: "Our inaugural public report, detailing the foundation's launch, early partnerships, and first-year field activities across conservation and community welfare domains.",
+    pdfUrl: '', highlights: ['Foundation established', '4 partner NGOs onboarded', 'First rescue centre opened'],
+    publishedDate: 'March 2024',
+  },
+];
+
+async function getReports() {
+  try {
+    await dbConnect();
+    const items = await Report.find({ isVisible: true }).sort({ order: 1 }).lean();
+    if (items.length > 0) {
+      return items.map((r) => ({
+        id: r._id.toString(),
+        year: r.year,
+        title: r.title,
+        description: r.description,
+        pdfUrl: r.pdfUrl || '',
+        highlights: r.highlights || [],
+        publishedDate: r.publishedDate ? new Date(r.publishedDate).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '',
+      }));
+    }
+    return DEFAULT_REPORTS;
+  } catch {
+    return DEFAULT_REPORTS;
+  }
+}
+
+export default async function ReportsPage() {
+  const reports = await getReports();
+
   return (
     <div className={styles.pageWrap}>
 
@@ -58,7 +105,7 @@ export default function ReportsPage() {
           </div>
 
           <div className={styles.reportsList}>
-            {reportsData.map((report, i) => (
+            {reports.map((report, i) => (
               <div key={report.id} className={`reveal reveal-delay-${(i % 3) + 1} ${styles.reportCard}`}>
                 <div className={styles.reportYear}>
                   <span className={styles.yearBadge}>{report.year}</span>
@@ -66,22 +113,29 @@ export default function ReportsPage() {
                 <div className={styles.reportBody}>
                   <h3 className={styles.reportTitle}>{report.title}</h3>
                   <p className={styles.reportDesc}>{report.description}</p>
-                  <div className={styles.highlights}>
-                    {report.highlights.map((h) => (
-                      <span key={h} className={styles.highlightTag}>✓ {h}</span>
-                    ))}
-                  </div>
-                  <p className={styles.publishedDate}>Published: {report.publishedDate}</p>
+                  {report.highlights.length > 0 && (
+                    <div className={styles.highlights}>
+                      {report.highlights.map((h) => (
+                        <span key={h} className={styles.highlightTag}>✓ {h}</span>
+                      ))}
+                    </div>
+                  )}
+                  {report.publishedDate && <p className={styles.publishedDate}>Published: {report.publishedDate}</p>}
                 </div>
                 <div className={styles.reportActions}>
-                  <a
-                    href={report.pdfUrl}
-                    className={`btn btn--gold ${styles.downloadBtn}`}
-                    download
-                    aria-label={`Download ${report.title}`}
-                  >
-                    ⬇ Download PDF
-                  </a>
+                  {report.pdfUrl ? (
+                    <a
+                      href={report.pdfUrl}
+                      className={`btn btn--gold ${styles.downloadBtn}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Download ${report.title}`}
+                    >
+                      ⬇ Download PDF
+                    </a>
+                  ) : (
+                    <span className={`btn btn--outline ${styles.downloadBtn} ${styles.disabledBtn}`}>Coming Soon</span>
+                  )}
                 </div>
               </div>
             ))}

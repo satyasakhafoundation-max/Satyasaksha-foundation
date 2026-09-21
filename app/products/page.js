@@ -2,6 +2,7 @@
 import ClientProductsPage from './ClientProductsPage';
 import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -21,6 +22,6 @@ async function getProducts() {
 }
 
 export default async function ProductsPage() {
-  const products = await getProducts();
-  return <ClientProductsPage products={products} />;
+  const [products, content] = await Promise.all([getProducts(), getPageContent('products')]);
+  return <ClientProductsPage products={products} content={content} />;
 }

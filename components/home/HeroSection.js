@@ -1,7 +1,8 @@
-// Server Component — queries HeroImage from DB, cached for 60s
+// Server Component — queries HeroImage + PageContent from DB, cached for 60s
 import ClientHeroSection from './ClientHeroSection';
 import dbConnect from '@/lib/mongodb';
 import HeroImage from '@/models/HeroImage';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -21,6 +22,6 @@ async function getHeroImages() {
 }
 
 export default async function HeroSection() {
-  const images = await getHeroImages();
-  return <ClientHeroSection images={images} />;
+  const [images, content] = await Promise.all([getHeroImages(), getPageContent('home')]);
+  return <ClientHeroSection images={images} content={content} />;
 }

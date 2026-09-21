@@ -1,17 +1,21 @@
-'use client';
+// Server Component — queries PageContent from DB, cached for 60s
+import { getPageContent } from '@/lib/pageContent';
 import styles from './MissionVision.module.css';
 
-export default function MissionVision() {
+export const revalidate = 60;
+
+export default async function MissionVision() {
+  const content = await getPageContent('home');
 
   return (
     <section className={`section ${styles.section}`} id="mission-vision">
       <div className="container">
-        
+
         {/* Central Quote Panel */}
         <div className={`reveal ${styles.quotePanel}`}>
           <div className={styles.quoteMark}>&quot;</div>
           <h2 className={`heading-lg ${styles.quoteText}`}>
-            The witness of truth — committed to protecting nature, empowering communities and acting with compassion.
+            {content.missionQuote}
           </h2>
           <div className="divider-gold"></div>
           <p className="label">Satyasaksha Foundation</p>
@@ -20,24 +24,24 @@ export default function MissionVision() {
         {/* Vision & Mission Cards */}
         <div className={styles.cardsGrid}>
           <div className={`reveal reveal-delay-1 ${styles.card}`}>
-            <div className={styles.cardIcon}>🌱</div>
+            <div className={styles.cardIcon}>{content.visionIcon}</div>
             <p className="label">Our Vision</p>
             <h3 className={`heading-md ${styles.cardTitle}`}>
-              A Thriving World for All Living Beings
+              {content.visionTitle}
             </h3>
             <p className="text-muted">
-              A world where nature thrives, every community flourishes, and truth guides purposeful action — a future built on compassion, knowledge and collective harmony.
+              {content.visionText}
             </p>
           </div>
 
           <div className={`reveal reveal-delay-2 ${styles.card}`}>
-            <div className={styles.cardIcon}>🎯</div>
+            <div className={styles.cardIcon}>{content.missionIcon}</div>
             <p className="label">Our Mission</p>
             <h3 className={`heading-md ${styles.cardTitle}`}>
-              Protect. Empower. Act With Truth.
+              {content.missionTitle}
             </h3>
             <p className="text-muted">
-              To protect wildlife, conserve natural environments, empower communities through education and skill development, and uphold animal welfare through honest, impactful action.
+              {content.missionText}
             </p>
           </div>
         </div>

@@ -7,16 +7,21 @@ import styles from './layout.module.css';
 
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
+  { href: '/admin/dashboard/site-settings', label: 'Site Settings', icon: '⚙️' },
+  { href: '/admin/dashboard/page-content', label: 'Page Content', icon: '📝' },
   { href: '/admin/dashboard/hero-images', label: 'Homepage Background', icon: '🌄' },
   { href: '/admin/dashboard/stats', label: 'Impact Stats', icon: '📈' },
   { href: '/admin/dashboard/work-highlights', label: 'Our Work — Pictures', icon: '📸' },
   { href: '/admin/dashboard/focus-areas', label: 'Focus Areas', icon: '🌿' },
+  { href: '/admin/dashboard/pillars', label: 'Core Program Highlights', icon: '🏛️' },
   { href: '/admin/dashboard/core-values', label: 'About — Core Values', icon: '🐘' },
   { href: '/admin/dashboard/team', label: 'Our Team', icon: '👤' },
   { href: '/admin/dashboard/news', label: 'News & Blog', icon: '📰' },
   { href: '/admin/dashboard/products', label: 'Products', icon: '🛍️' },
+  { href: '/admin/dashboard/involvement-options', label: 'Get Involved — Options', icon: '🙌' },
   { href: '/admin/dashboard/testimonials', label: 'Testimonials', icon: '💬' },
   { href: '/admin/dashboard/partners', label: 'Partners', icon: '🤝' },
+  { href: '/admin/dashboard/reports', label: 'Reports & Transparency', icon: '📄' },
   { href: '/admin/dashboard/contacts', label: 'Messages', icon: '📬' },
 ];
 

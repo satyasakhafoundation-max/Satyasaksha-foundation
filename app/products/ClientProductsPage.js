@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import styles from './page.module.css';
 
-export default function ClientProductsPage({ products }) {
+export default function ClientProductsPage({ products, content }) {
   const [activeCategory, setActiveCategory] = useState('All');
 
   const categories = useMemo(() => {
@@ -19,12 +19,12 @@ export default function ClientProductsPage({ products }) {
 
       {/* Page Hero */}
       <section className={styles.hero}>
-        <div className={styles.heroBg} style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=2500&auto=format&fit=crop")' }}></div>
+        <div className={styles.heroBg} style={{ backgroundImage: `url(${content.heroImage})` }}></div>
         <div className={styles.heroOverlay}></div>
         <div className={`container ${styles.heroContent}`}>
-          <h1 className="heading-hero reveal">Our Merchandise</h1>
+          <h1 className="heading-hero reveal">{content.heroTitle}</h1>
           <p className={`reveal reveal-delay-1 ${styles.heroSub}`}>
-            Handpicked keepsakes that support our mission — every purchase helps fund conservation and community work.
+            {content.heroSubtitle}
           </p>
         </div>
       </section>

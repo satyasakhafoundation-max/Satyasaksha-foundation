@@ -103,6 +103,7 @@
 
 .address p {
   margin-bottom: var(--space-1);
+  white-space: pre-line;
 }
 
 .email {

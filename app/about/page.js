@@ -2,6 +2,7 @@
 import ClientAboutPage from './ClientAboutPage';
 import dbConnect from '@/lib/mongodb';
 import CoreValue from '@/models/CoreValue';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -30,6 +31,6 @@ export const metadata = {
 };
 
 export default async function AboutPage() {
-  const coreValues = await getCoreValues();
-  return <ClientAboutPage coreValues={coreValues} />;
+  const [coreValues, content] = await Promise.all([getCoreValues(), getPageContent('about')]);
+  return <ClientAboutPage coreValues={coreValues} content={content} />;
 }

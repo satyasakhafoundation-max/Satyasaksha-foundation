@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/auth';
 import cloudinary from '@/lib/cloudinary';
 
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
-const ALLOWED_FOLDERS = ['focus-areas', 'news', 'about', 'team', 'hero', 'products', 'work'];
+const ALLOWED_FOLDERS = ['focus-areas', 'news', 'about', 'team', 'hero', 'products', 'work', 'pillars', 'involvement', 'reports'];
 const MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB
 
 // POST /api/admin/upload

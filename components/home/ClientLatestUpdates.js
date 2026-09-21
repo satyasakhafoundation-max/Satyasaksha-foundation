@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import styles from './LatestUpdates.module.css';
 
-export default function ClientLatestUpdates({ news }) {
+export default function ClientLatestUpdates({ news, content }) {
 
   return (
     <section className="section" id="latest-updates">
@@ -11,7 +11,7 @@ export default function ClientLatestUpdates({ news }) {
         <div className={`reveal ${styles.headerWrap}`}>
           <p className="label">News & Updates</p>
           <div className="divider-gold" style={{ margin: 'var(--space-4) auto 0' }}></div>
-          <h2 className="heading-lg" style={{ textAlign: 'center' }}>Latest Stories</h2>
+          <h2 className="heading-lg" style={{ textAlign: 'center' }}>{content.newsHeading}</h2>
         </div>
 
         <div className={styles.newsList}>

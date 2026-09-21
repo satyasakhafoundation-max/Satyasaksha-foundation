@@ -38,19 +38,16 @@ function Counter({ targetValue, duration = 2000 }) {
   return <span ref={elementRef}>{count.toLocaleString()}</span>;
 }
 
-export default function ClientImpactSection({ stats }) {
+export default function ClientImpactSection({ stats, content }) {
 
   return (
     <section className={`section ${styles.section}`} id="impact">
       <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         
         <div className={`section-header reveal ${styles.headerOverride}`}>
-          <p className="label">Our Impact &amp; Work</p>
+          <p className="label">{content.impactLabel}</p>
           <div className="divider-gold"></div>
-          <h2 className="heading-xl">Every Action, Every Life</h2>
-          <p className="text-muted" style={{ maxWidth: '600px', margin: 'var(--space-4) auto 0', color: 'rgba(255,255,255,0.6)' }}>
-            Figures will be updated with verified data from the Foundation.
-          </p>
+          <h2 className="heading-xl">{content.impactHeading}</h2>
         </div>
 
         <div className={styles.grid}>

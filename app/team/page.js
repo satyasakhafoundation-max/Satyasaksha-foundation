@@ -2,6 +2,7 @@
 import ClientTeamPage from './ClientTeamPage';
 import dbConnect from '@/lib/mongodb';
 import TeamMember from '@/models/TeamMember';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -30,6 +31,6 @@ export const metadata = {
 };
 
 export default async function TeamPage() {
-  const members = await getTeamMembers();
-  return <ClientTeamPage members={members} />;
+  const [members, content] = await Promise.all([getTeamMembers(), getPageContent('team')]);
+  return <ClientTeamPage members={members} content={content} />;
 }

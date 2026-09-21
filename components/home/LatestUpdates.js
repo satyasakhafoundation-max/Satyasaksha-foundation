@@ -4,6 +4,7 @@ import ClientLatestUpdates from './ClientLatestUpdates';
 import dbConnect from '@/lib/mongodb';
 import NewsArticle from '@/models/NewsArticle';
 import newsStaticData from '@/data/news.json';
+import { getPageContent } from '@/lib/pageContent';
 
 export const revalidate = 60;
 
@@ -33,6 +34,6 @@ async function getLatestNews() {
 }
 
 export default async function LatestUpdates() {
-  const news = await getLatestNews();
-  return <ClientLatestUpdates news={news} />;
+  const [news, content] = await Promise.all([getLatestNews(), getPageContent('home')]);
+  return <ClientLatestUpdates news={news} content={content} />;
 }
