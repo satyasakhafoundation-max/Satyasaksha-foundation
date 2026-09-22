@@ -47,7 +47,7 @@ export default function ClientFooter({ settings }) {
               <li><Link href="/team">Our Team</Link></li>
               <li><Link href="/impact">Impact &amp; Work</Link></li>
               <li><Link href="/news">News &amp; Blogs</Link></li>
-              <li><Link href="/products">Merchandise</Link></li>
+
               <li><Link href="/reports">Reports &amp; Transparency</Link></li>
             </ul>
           </div>

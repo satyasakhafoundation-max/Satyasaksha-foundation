@@ -10,7 +10,6 @@ const navLinks = [
   { name: 'Our Team', path: '/team' },
   { name: 'Impact & Work', path: '/impact' },
   { name: 'News & Blogs', path: '/news' },
-  { name: 'Merchandise', path: '/products' },
   { name: 'Get Involved', path: '/get-involved' },
   { name: 'Contact', path: '/contact' },
 ];

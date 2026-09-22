@@ -17,7 +17,6 @@ const navItems = [
   { href: '/admin/dashboard/core-values', label: 'About — Core Values', icon: '🐘' },
   { href: '/admin/dashboard/team', label: 'Our Team', icon: '👤' },
   { href: '/admin/dashboard/news', label: 'News & Blog', icon: '📰' },
-  { href: '/admin/dashboard/products', label: 'Products', icon: '🛍️' },
   { href: '/admin/dashboard/involvement-options', label: 'Get Involved — Options', icon: '🙌' },
   { href: '/admin/dashboard/testimonials', label: 'Testimonials', icon: '💬' },
   { href: '/admin/dashboard/partners', label: 'Partners', icon: '🤝' },
