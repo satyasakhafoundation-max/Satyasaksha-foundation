@@ -40,20 +40,24 @@ export default function ImageUploader({
     const staged = files.map((file) => ({ localUrl: URL.createObjectURL(file), file, uploading: true }));
     setPending((prev) => [...prev, ...staged]);
 
+    const newlyUploaded = [];
     for (const item of staged) {
       try {
         const imageUrl = await uploadFile(item.file, folder);
-        setPending((prev) => prev.filter((p) => p !== item));
-        URL.revokeObjectURL(item.localUrl);
-        if (multiple) {
-          onChange([...values, imageUrl]);
-        } else {
-          onChange(imageUrl);
-        }
+        newlyUploaded.push(imageUrl);
       } catch (err) {
+        showToast(err.message || 'Image upload failed.', 'error');
+      } finally {
         setPending((prev) => prev.filter((p) => p !== item));
         URL.revokeObjectURL(item.localUrl);
-        showToast(err.message || 'Image upload failed.', 'error');
+      }
+    }
+
+    if (newlyUploaded.length > 0) {
+      if (multiple) {
+        onChange([...values, ...newlyUploaded]);
+      } else {
+        onChange(newlyUploaded[newlyUploaded.length - 1]);
       }
     }
   };

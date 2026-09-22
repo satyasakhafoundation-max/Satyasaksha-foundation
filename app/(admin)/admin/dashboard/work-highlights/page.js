@@ -6,7 +6,7 @@ import {
 } from '@/components/admin/ui';
 import styles from './page.module.css';
 
-const emptyForm = { title: '', description: '', image: '' };
+const emptyForm = { title: '', description: '', image: '', images: [] };
 
 export default function AdminWorkHighlightsPage() {
   const [items, setItems] = useState([]);
@@ -30,7 +30,7 @@ export default function AdminWorkHighlightsPage() {
   const openNew = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
   const openEdit = (item) => {
     setEditing(item);
-    setForm({ title: item.title, description: item.description || '', image: item.image });
+    setForm({ title: item.title, description: item.description || '', image: item.image, images: item.images || [] });
     setModalOpen(true);
   };
 
@@ -101,12 +101,22 @@ export default function AdminWorkHighlightsPage() {
           <Field label="Caption">
             <Textarea placeholder="Short caption (optional)" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
           </Field>
-          <ImageUploader
-            folder="work"
-            label="Upload Photo"
-            value={form.image}
-            onChange={(url) => setForm((p) => ({ ...p, image: url }))}
-          />
+          <Field label="Cover Photo">
+            <ImageUploader
+              folder="work"
+              value={form.image}
+              onChange={(url) => setForm((p) => ({ ...p, image: url }))}
+            />
+          </Field>
+          <Field label="Gallery Images (Multiple)">
+            <ImageUploader
+              folder="work"
+              multiple
+              values={form.images}
+              onChange={(urls) => setForm((p) => ({ ...p, images: urls }))}
+              label="Upload Gallery Images"
+            />
+          </Field>
           <div className={styles.modalActions}>
             <Button type="submit" loading={saving === 'form'}>{editing ? 'Save Changes' : 'Add Picture'}</Button>
             <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancel</Button>

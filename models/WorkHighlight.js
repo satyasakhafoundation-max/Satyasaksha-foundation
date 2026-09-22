@@ -15,6 +15,10 @@ const WorkHighlightSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     order: {
       type: Number,
       default: 0,

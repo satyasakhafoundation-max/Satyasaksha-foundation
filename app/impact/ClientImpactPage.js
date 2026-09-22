@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -38,6 +38,38 @@ function Counter({ targetValue, duration = 2000 }) {
 }
 
 export default function ClientImpactPage({ stats, workHighlights = [], content }) {
+  const [activeWorkIndex, setActiveWorkIndex] = useState(null);
+  const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
+
+  const activeGallery = activeWorkIndex !== null 
+    ? [workHighlights[activeWorkIndex].image, ...(workHighlights[activeWorkIndex].images || [])] 
+    : [];
+
+  const closeLightbox = useCallback(() => {
+    setActiveWorkIndex(null);
+    setLightboxImageIndex(0);
+  }, []);
+
+  const showPrev = useCallback((e) => {
+    e.stopPropagation();
+    setLightboxImageIndex((i) => (i - 1 + activeGallery.length) % activeGallery.length);
+  }, [activeGallery.length]);
+
+  const showNext = useCallback((e) => {
+    e.stopPropagation();
+    setLightboxImageIndex((i) => (i + 1) % activeGallery.length);
+  }, [activeGallery.length]);
+
+  useEffect(() => {
+    if (activeWorkIndex === null) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') setLightboxImageIndex((i) => (i - 1 + activeGallery.length) % activeGallery.length);
+      if (e.key === 'ArrowRight') setLightboxImageIndex((i) => (i + 1) % activeGallery.length);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeWorkIndex, activeGallery.length, closeLightbox]);
 
   return (
     <div className={styles.pageWrap}>
@@ -90,7 +122,15 @@ export default function ClientImpactPage({ stats, workHighlights = [], content }
 
             <div className={styles.picturesGrid}>
               {workHighlights.map((item, i) => (
-                <div key={item._id || item.id} className={`reveal reveal-delay-${(i % 3) + 1} ${styles.pictureCard}`}>
+                <div 
+                  key={item._id || item.id} 
+                  className={`reveal reveal-delay-${(i % 3) + 1} ${styles.pictureCard}`}
+                  onClick={() => {
+                    setActiveWorkIndex(i);
+                    setLightboxImageIndex(0);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className={styles.pictureImage} style={{ backgroundImage: `url(${item.image})` }}></div>
                   <div className={styles.pictureOverlay}>
                     <p className={styles.pictureTitle}>{item.title}</p>
@@ -123,6 +163,33 @@ export default function ClientImpactPage({ stats, workHighlights = [], content }
           </div>
         </div>
       </section>
+
+      {/* Lightbox */}
+      {activeWorkIndex !== null && (
+        <div className={styles.lightbox} onClick={closeLightbox}>
+          <button className={styles.lightboxClose} onClick={closeLightbox} aria-label="Close">✕</button>
+          {activeGallery.length > 1 && (
+            <>
+              <button className={`${styles.lightboxNav} ${styles.lightboxPrev}`} onClick={showPrev} aria-label="Previous image">‹</button>
+              <button className={`${styles.lightboxNav} ${styles.lightboxNext}`} onClick={showNext} aria-label="Next image">›</button>
+            </>
+          )}
+          <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
+            <img src={activeGallery[lightboxImageIndex]} alt="" className={styles.lightboxImg} />
+            <div className={styles.lightboxCaption}>
+              <p className={styles.lightboxCaptionTitle}>{workHighlights[activeWorkIndex].title}</p>
+              {workHighlights[activeWorkIndex].description && (
+                <p>{workHighlights[activeWorkIndex].description}</p>
+              )}
+              {activeGallery.length > 1 && (
+                <p style={{ marginTop: '8px', opacity: 0.8, fontSize: '0.9rem' }}>
+                  Image {lightboxImageIndex + 1} of {activeGallery.length}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
