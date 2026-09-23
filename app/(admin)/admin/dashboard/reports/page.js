@@ -79,6 +79,7 @@ export default function AdminReportsPage() {
     try {
       const res = await fetch('/api/admin/reports', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, isVisible: !item.isVisible }) });
       if (!res.ok) throw new Error();
+      showToast(item.isVisible ? 'Report hidden.' : 'Report visible.');
       fetchItems();
     } catch {
       showToast('Failed to update.', 'error');

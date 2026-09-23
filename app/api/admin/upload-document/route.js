@@ -43,6 +43,9 @@ export async function POST(request) {
     return NextResponse.json({ fileUrl: result.secure_url });
   } catch (error) {
     console.error('Cloudinary document upload error:', error);
-    return NextResponse.json({ error: 'Upload failed: ' + error.message }, { status: 500 });
+    // Cloudinary SDK errors are shaped { error: { message, ... } }, not a
+    // plain Error — error.message alone is always undefined for these.
+    const message = error?.error?.message || error?.message || 'Unknown error';
+    return NextResponse.json({ error: 'Upload failed: ' + message }, { status: 500 });
   }
 }

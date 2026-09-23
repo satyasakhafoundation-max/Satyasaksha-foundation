@@ -41,6 +41,7 @@ export default function AdminInvolvementOptionsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.icon) { showToast('Please add an emoji or upload an icon image.', 'error'); return; }
     setSaving('form');
     try {
       const payload = { ...form, bullets: form.bullets.split('\n').map((b) => b.trim()).filter(Boolean) };

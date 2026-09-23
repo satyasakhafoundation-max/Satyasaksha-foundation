@@ -5,14 +5,20 @@ import ImpactStat from '@/models/ImpactStat';
 
 export const dynamic = 'force-dynamic';
 
-// GET /api/admin/stats - public (also used by public site)
+// GET /api/admin/stats - public (also used by public site). The admin Stats
+// page reads from this same endpoint (there's no separate "-all" variant),
+// so a signed-in admin must always get a fresh, uncached response —
+// otherwise their own just-saved edits can appear to not have persisted for
+// up to a minute. Only anonymous/public callers get the shared cache.
 export async function GET() {
+  const { session } = await requireAdmin();
+
   try {
     await dbConnect();
     const stats = await ImpactStat.find({}).sort({ order: 1 }).lean();
     return NextResponse.json(stats, {
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        'Cache-Control': session ? 'no-store' : 'public, s-maxage=60, stale-while-revalidate=300',
       },
     });
   } catch (error) {

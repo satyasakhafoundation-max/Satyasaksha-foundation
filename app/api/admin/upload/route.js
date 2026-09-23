@@ -65,6 +65,12 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Cloudinary upload error:', error);
-    return NextResponse.json({ error: 'Upload failed: ' + error.message }, { status: 500 });
+    // The Cloudinary SDK rejects with { error: { message, http_code, name } },
+    // not a plain Error — reading error.message directly (as before) is
+    // always undefined for these, so admins saw a useless "Upload failed:
+    // undefined" with no indication of what actually went wrong (e.g. a
+    // transient network timeout).
+    const message = error?.error?.message || error?.message || 'Unknown error';
+    return NextResponse.json({ error: 'Upload failed: ' + message }, { status: 500 });
   }
 }
