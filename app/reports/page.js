@@ -34,18 +34,18 @@ async function getReports() {
   try {
     await dbConnect();
     const items = await Report.find({ isVisible: true }).sort({ order: 1 }).lean();
-    if (items.length > 0) {
-      return items.map((r) => ({
-        id: r._id.toString(),
-        year: r.year,
-        title: r.title,
-        description: r.description,
-        pdfUrl: r.pdfUrl || '',
-        highlights: r.highlights || [],
-        publishedDate: r.publishedDate ? new Date(r.publishedDate).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '',
-      }));
-    }
-    return DEFAULT_REPORTS;
+    // A successful query with zero results means there's genuinely nothing
+    // published yet — distinct from the DB being unreachable, so it
+    // shouldn't fall back to fabricated placeholder reports as if real.
+    return items.map((r) => ({
+      id: r._id.toString(),
+      year: r.year,
+      title: r.title,
+      description: r.description,
+      pdfUrl: r.pdfUrl || '',
+      highlights: r.highlights || [],
+      publishedDate: r.publishedDate ? new Date(r.publishedDate).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '',
+    }));
   } catch {
     return DEFAULT_REPORTS;
   }
@@ -105,6 +105,11 @@ export default async function ReportsPage() {
           </div>
 
           <div className={styles.reportsList}>
+            {reports.length === 0 && (
+              <p className="text-muted" style={{ textAlign: 'center' }}>
+                No reports published yet — check back soon.
+              </p>
+            )}
             {reports.map((report, i) => (
               <div key={report.id} className={`reveal reveal-delay-${(i % 3) + 1} ${styles.reportCard}`}>
                 <div className={styles.reportYear}>

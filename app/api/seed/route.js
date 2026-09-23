@@ -57,11 +57,21 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    // Clear existing data and re-seed
-    await ImpactStat.deleteMany({});
-    await FocusArea.deleteMany({});
-    await CoreValue.deleteMany({});
-    await TeamMember.deleteMany({});
+    // Refuse to run if the database already has content. This endpoint is
+    // meant to seed a fresh/empty database only — without this guard, calling
+    // it again wipes and reverts every edit made through the admin panels.
+    const [statCount, focusCount, valueCount, teamCount] = await Promise.all([
+      ImpactStat.countDocuments(),
+      FocusArea.countDocuments(),
+      CoreValue.countDocuments(),
+      TeamMember.countDocuments(),
+    ]);
+    if (statCount > 0 || focusCount > 0 || valueCount > 0 || teamCount > 0) {
+      return NextResponse.json(
+        { error: 'Database already has content. This endpoint only seeds an empty database and will not overwrite existing data.' },
+        { status: 409 }
+      );
+    }
 
     await ImpactStat.insertMany(impactStats);
     await FocusArea.insertMany(focusAreas);

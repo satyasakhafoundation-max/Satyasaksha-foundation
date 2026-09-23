@@ -9,6 +9,8 @@ import PillarHighlights from '@/components/home/PillarHighlights';
 import LatestUpdates from '@/components/home/LatestUpdates';
 import DonationCta from '@/components/home/DonationCta';
 
+export const revalidate = 60;
+
 export default function Home() {
   return (
     <>

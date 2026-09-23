@@ -39,10 +39,10 @@ async function getOptions() {
   try {
     await dbConnect();
     const items = await InvolvementOption.find({ isVisible: true }).sort({ order: 1 }).lean();
-    if (items.length > 0) {
-      return items.map((item) => ({ ...item, _id: item._id.toString() }));
-    }
-    return DEFAULT_OPTIONS;
+    // A successful query with zero results means there's genuinely nothing
+    // to show yet — distinct from the DB being unreachable, so it shouldn't
+    // fall back to fabricated placeholder options as if they were real.
+    return items.map((item) => ({ ...item, _id: item._id.toString() }));
   } catch {
     return DEFAULT_OPTIONS;
   }
@@ -69,6 +69,11 @@ export default async function GetInvolvedPage() {
       {/* Avenues Grid */}
       <section className={`section ${styles.avenuesSection}`}>
         <div className={`container ${styles.grid}`}>
+          {options.length === 0 && (
+            <p className="text-muted" style={{ textAlign: 'center', gridColumn: '1 / -1' }}>
+              We&apos;re setting up ways to get involved — check back soon.
+            </p>
+          )}
           {options.map((option, i) => (
             <div key={option._id || option.id} id={option.anchorId || undefined} className={`reveal reveal-delay-${i % 3} ${styles.card}`}>
               <div className={styles.cardHeader}>

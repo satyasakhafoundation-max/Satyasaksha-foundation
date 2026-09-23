@@ -12,8 +12,11 @@ export async function GET() {
 
   try {
     await dbConnect();
-    const users = await User.find({}).sort({ createdAt: -1 }).lean();
-    return NextResponse.json(users);
+    // Select +password only to derive `pendingSetup` server-side — the hash
+    // itself is stripped before the response goes out, never sent to the client.
+    const users = await User.find({}).select('+password').sort({ createdAt: -1 }).lean();
+    const sanitized = users.map(({ password, ...user }) => ({ ...user, pendingSetup: !password }));
+    return NextResponse.json(sanitized);
   } catch { return NextResponse.json({ error: 'Failed to fetch users.' }, { status: 500 }); }
 }
 

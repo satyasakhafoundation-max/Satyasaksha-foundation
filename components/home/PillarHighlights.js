@@ -31,10 +31,10 @@ async function getPillars() {
   try {
     await dbConnect();
     const items = await Pillar.find({ isVisible: true }).sort({ order: 1 }).lean();
-    if (items.length > 0) {
-      return items.map((item) => ({ ...item, _id: item._id.toString() }));
-    }
-    return DEFAULT_PILLARS;
+    // A successful query with zero results means there's genuinely nothing
+    // to show yet — distinct from the DB being unreachable, so it shouldn't
+    // fall back to fabricated placeholder pillars as if they were real.
+    return items.map((item) => ({ ...item, _id: item._id.toString() }));
   } catch {
     return DEFAULT_PILLARS;
   }
@@ -42,6 +42,7 @@ async function getPillars() {
 
 export default async function PillarHighlights() {
   const pillars = await getPillars();
+  if (pillars.length === 0) return null;
 
   return (
     <section className="section" id="core-pillars">

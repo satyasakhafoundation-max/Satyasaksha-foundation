@@ -77,7 +77,8 @@ export default function AdminReportsPage() {
   const handleToggle = async (item) => {
     setSaving(item._id);
     try {
-      await fetch('/api/admin/reports', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, isVisible: !item.isVisible }) });
+      const res = await fetch('/api/admin/reports', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, isVisible: !item.isVisible }) });
+      if (!res.ok) throw new Error();
       fetchItems();
     } catch {
       showToast('Failed to update.', 'error');
@@ -100,10 +101,16 @@ export default function AdminReportsPage() {
 
   const handleReorder = async (reordered) => {
     setItems(reordered);
-    await Promise.all(reordered.map((item, i) =>
-      fetch('/api/admin/reports', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, order: i + 1 }) })
-    ));
-    showToast('Order saved.');
+    try {
+      const results = await Promise.all(reordered.map((item, i) =>
+        fetch('/api/admin/reports', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _id: item._id, order: i + 1 }) })
+      ));
+      if (results.some((res) => !res.ok)) throw new Error();
+      showToast('Order saved.');
+    } catch {
+      showToast('Failed to save new order — refreshing list.', 'error');
+      fetchItems();
+    }
   };
 
   return (

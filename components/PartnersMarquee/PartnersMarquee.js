@@ -18,8 +18,10 @@ export const revalidate = 60;
 async function getPartners() {
   try {
     await dbConnect();
-    const items = await Partner.find({ isVisible: true }).sort({ order: 1, createdAt: -1 }).lean();
-    return items.length > 0 ? items : FALLBACK;
+    // A successful query with zero results means there's genuinely nothing
+    // to show — distinct from the DB being unreachable, so it shouldn't
+    // display fabricated placeholder partners as if they were real ones.
+    return await Partner.find({ isVisible: true }).sort({ order: 1, createdAt: -1 }).lean();
   } catch {
     return FALLBACK;
   }
@@ -27,6 +29,7 @@ async function getPartners() {
 
 export default async function PartnersMarquee() {
   const partners = await getPartners();
+  if (partners.length === 0) return null;
   // Duplicate the list for seamless looping
   const doubled = [...partners, ...partners];
 

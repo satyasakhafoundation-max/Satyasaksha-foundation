@@ -145,7 +145,7 @@ export default function AdminUsersPage() {
                     {user.role === 'super_admin' && <Badge variant="gold">⭐ Super Admin</Badge>}
                     {user._id === session?.user?.id && <Badge variant="neutral">You</Badge>}
                     <Badge variant={user.isActive ? 'success' : 'neutral'}>{user.isActive ? '● Active' : '○ Inactive'}</Badge>
-                    {!user.password && !user.isActive && <Badge variant="warning">⏳ Pending Setup</Badge>}
+                    {user.pendingSetup && !user.isActive && <Badge variant="warning">⏳ Pending Setup</Badge>}
                   </div>
                   <p className={styles.userEmail}>{user.email}</p>
                   <p className={styles.userDate}>Joined {new Date(user.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>

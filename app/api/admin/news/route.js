@@ -47,9 +47,15 @@ export async function PUT(request) {
     const { _id, ...updateData } = await request.json();
     if (updateData.content) updateData.content = sanitizeRichText(updateData.content);
 
-    // Set publishedAt on first publish (findByIdAndUpdate bypasses pre-save hook)
+    // Set publishedAt on first publish only (findByIdAndUpdate bypasses the
+    // pre-save hook). Check the EXISTING document, not the request body — the
+    // edit form never sends publishedAt back, so it's always absent from the
+    // body and checking that would re-stamp it to "now" on every save.
     if (updateData.isPublished && !updateData.publishedAt) {
-      updateData.publishedAt = new Date();
+      const existing = await NewsArticle.findById(_id).select('publishedAt').lean();
+      if (existing && !existing.publishedAt) {
+        updateData.publishedAt = new Date();
+      }
     }
 
     const article = await NewsArticle.findByIdAndUpdate(_id, updateData, {

@@ -25,7 +25,7 @@ async function getSettings() {
 
 export async function generateMetadata() {
   const s = await getSettings();
-  const title = `${s.siteName} | The Witness of Truth`;
+  const title = `${s.siteName} | ${s.tagline}`;
   const keywords = s.metaKeywords.split(',').map((k) => k.trim()).filter(Boolean);
 
   return {

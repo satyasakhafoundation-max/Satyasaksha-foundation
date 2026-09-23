@@ -31,5 +31,22 @@ async function getSettings() {
 
 export default async function Footer() {
   const settings = await getSettings();
-  return <ClientFooter settings={settings} />;
+  // Pass only the plain string fields ClientFooter actually renders — the
+  // raw .lean() result also carries a Mongoose ObjectId (_id), Date fields,
+  // and other non-plain values that React can't serialize across the
+  // Server->Client Component boundary.
+  const {
+    siteName, tagline, footerDescription, copyrightName,
+    address, email, phone,
+    facebookUrl, instagramUrl, twitterUrl, linkedinUrl,
+  } = settings;
+  return (
+    <ClientFooter
+      settings={{
+        siteName, tagline, footerDescription, copyrightName,
+        address, email, phone,
+        facebookUrl, instagramUrl, twitterUrl, linkedinUrl,
+      }}
+    />
+  );
 }

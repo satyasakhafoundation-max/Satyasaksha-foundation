@@ -13,30 +13,32 @@ export async function POST(request) {
     let isVerified = false;
     let eventData = null;
 
-    // 2. Verify Webhook Signature Securly
+    // 2. Verify Webhook Signature Securely
     if (provider === 'razorpay') {
-      // Scaffold for Razorpay Verification
-      const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'mock_secret';
-      
-      const expectedSignature = crypto
-        .createHmac('sha256', secret)
-        .update(rawBody)
-        .digest('hex');
+      const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-      // In production, we compare the signatures:
-      // isVerified = (expectedSignature === rzpSignature);
-      isVerified = true; // Mock verification for scaffold
-      eventData = JSON.parse(rawBody);
+      if (secret && rzpSignature) {
+        const expectedSignature = crypto
+          .createHmac('sha256', secret)
+          .update(rawBody)
+          .digest('hex');
+
+        const expected = Buffer.from(expectedSignature, 'utf8');
+        const received = Buffer.from(rzpSignature, 'utf8');
+        isVerified = expected.length === received.length && crypto.timingSafeEqual(expected, received);
+      }
+
+      if (isVerified) eventData = JSON.parse(rawBody);
 
     } else if (provider === 'paypal') {
-      // Scaffold for PayPal Verification
-      // Uses PayPal's /v1/notifications/verify-webhook-signature API
-      isVerified = true; // Mock verification for scaffold
-      eventData = JSON.parse(rawBody);
+      // Not implemented: real verification requires calling PayPal's
+      // /v1/notifications/verify-webhook-signature API. Fail closed (reject)
+      // rather than accept unverified PayPal webhooks until that's built.
+      isVerified = false;
     }
 
     if (!isVerified) {
-      console.warn(`[Webhook API] Invalid signature from provider: ${provider}`);
+      console.warn(`[Webhook API] Invalid or unverifiable signature from provider: ${provider}`);
       return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
     }
 

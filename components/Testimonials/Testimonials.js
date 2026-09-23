@@ -31,9 +31,13 @@ const FALLBACK = [
 async function getTestimonials() {
   try {
     await dbConnect();
-    const items = await Testimonial.find({ isVisible: true }).sort({ order: 1, createdAt: -1 }).lean();
-    return items.length > 0 ? items : FALLBACK;
+    // A real, successful query returning zero items means there's genuinely
+    // nothing to show yet (e.g. everything was unpublished) — that's not the
+    // same as the DB being unreachable, so it should NOT show fabricated
+    // placeholder quotes as if they were real testimonials.
+    return await Testimonial.find({ isVisible: true }).sort({ order: 1, createdAt: -1 }).lean();
   } catch {
+    // DB unreachable — degrade gracefully with generic placeholder quotes.
     return FALLBACK;
   }
 }
@@ -46,6 +50,7 @@ export const revalidate = 60;
 
 export default async function Testimonials() {
   const testimonials = await getTestimonials();
+  if (testimonials.length === 0) return null;
 
   return (
     <section className={`section ${styles.section}`} id="testimonials">

@@ -7,7 +7,7 @@ import {
 import styles from './page.module.css';
 
 const isImageIcon = (icon) => typeof icon === 'string' && (icon.startsWith('http') || icon.startsWith('data:image'));
-const emptyForm = { title: '', icon: '', description: '', color: '#1B4332', cardStyle: 'solid' };
+const emptyForm = { title: '', icon: '', description: '', color: '#1B4332', cardStyle: 'solid', link: '/news' };
 
 export default function AdminFocusAreasPage() {
   const [areas, setAreas] = useState([]);
@@ -31,7 +31,7 @@ export default function AdminFocusAreasPage() {
   const openNew = () => { setEditing(null); setForm(emptyForm); setModalOpen(true); };
   const openEdit = (area) => {
     setEditing(area);
-    setForm({ title: area.title, icon: area.icon, description: area.description, color: area.color, cardStyle: area.cardStyle || 'solid' });
+    setForm({ title: area.title, icon: area.icon, description: area.description, color: area.color, cardStyle: area.cardStyle || 'solid', link: area.link || '/news' });
     setModalOpen(true);
   };
 
@@ -42,7 +42,7 @@ export default function AdminFocusAreasPage() {
       const method = editing ? 'PUT' : 'POST';
       const payload = editing
         ? { _id: editing._id, ...form }
-        : { ...form, link: '/news', order: areas.length + 1 };
+        : { ...form, order: areas.length + 1 };
       const res = await fetch('/api/admin/focus-areas', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) throw new Error((await res.json()).error);
       showToast(editing ? 'Focus area updated!' : 'Focus area added!');
@@ -129,6 +129,9 @@ export default function AdminFocusAreasPage() {
                 <input type="radio" checked={form.cardStyle === 'translucent'} onChange={() => setForm((p) => ({ ...p, cardStyle: 'translucent' }))} /> Translucent
               </label>
             </div>
+          </Field>
+          <Field label="Card Link" required hint="Where this card takes visitors when clicked, e.g. /news or /get-involved">
+            <Input required placeholder="/news" value={form.link} onChange={(e) => setForm((p) => ({ ...p, link: e.target.value }))} />
           </Field>
           <div className={styles.modalActions}>
             <Button type="submit" loading={saving === 'form'}>{editing ? 'Save Changes' : 'Add Focus Area'}</Button>

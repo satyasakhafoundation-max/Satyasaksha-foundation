@@ -21,17 +21,19 @@ export default function AdminHeroImagesPage() {
 
   // ImageUploader is always given an empty `values` array here (this page has
   // no persistent "staging" array — each finished upload becomes its own
-  // HeroImage document immediately), so each onChange call carries just the
-  // one newly-uploaded URL.
+  // HeroImage document immediately). With `multiple`, onChange can carry
+  // several newly-uploaded URLs at once, so a HeroImage doc is created for
+  // every url, not just the last one.
   const handleNewUpload = async (urls) => {
-    const imageUrl = urls[urls.length - 1];
     try {
-      await fetch('/api/admin/hero-images', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl, order: images.length + 1 }),
-      });
-      showToast('Image added to the rotation!');
+      await Promise.all(urls.map((imageUrl, i) =>
+        fetch('/api/admin/hero-images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl, order: images.length + i + 1 }),
+        })
+      ));
+      showToast(urls.length > 1 ? `${urls.length} images added to the rotation!` : 'Image added to the rotation!');
       fetchImages();
     } catch {
       showToast('Failed to save image.', 'error');
