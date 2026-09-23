@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import ImpactStat from '@/models/ImpactStat';
@@ -35,6 +36,8 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const stat = await ImpactStat.create(body);
+    revalidatePath('/');
+    revalidatePath('/impact');
     return NextResponse.json(stat, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -60,6 +63,8 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Stat not found' }, { status: 404 });
     }
 
+    revalidatePath('/');
+    revalidatePath('/impact');
     return NextResponse.json(stat);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -81,6 +86,8 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Stat not found' }, { status: 404 });
     }
 
+    revalidatePath('/');
+    revalidatePath('/impact');
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

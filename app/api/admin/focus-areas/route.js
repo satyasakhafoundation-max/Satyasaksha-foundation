@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import FocusArea from '@/models/FocusArea';
@@ -35,6 +36,7 @@ export async function POST(request) {
       body.id = body.title.toLowerCase().replace(/\s+/g, '-');
     }
     const area = await FocusArea.create(body);
+    revalidatePath('/');
     return NextResponse.json(area, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -60,6 +62,7 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Focus area not found' }, { status: 404 });
     }
 
+    revalidatePath('/');
     return NextResponse.json(area);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -81,6 +84,7 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Focus area not found' }, { status: 404 });
     }
 
+    revalidatePath('/');
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

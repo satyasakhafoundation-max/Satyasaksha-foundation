@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Partner from '@/models/Partner';
@@ -22,6 +23,7 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const item = await Partner.create(body);
+    revalidatePath('/');
     return NextResponse.json(item, { status: 201 });
   } catch (error) { return NextResponse.json({ error: error.message }, { status: 400 }); }
 }
@@ -34,6 +36,7 @@ export async function PUT(request) {
     const { _id, ...update } = await request.json();
     const item = await Partner.findByIdAndUpdate(_id, update, { new: true, runValidators: true });
     if (!item) return NextResponse.json({ error: 'Not found.' }, { status: 404 });
+    revalidatePath('/');
     return NextResponse.json(item);
   } catch (error) { return NextResponse.json({ error: error.message }, { status: 400 }); }
 }
@@ -47,6 +50,7 @@ export async function DELETE(request) {
     const id = searchParams.get('id');
     const item = await Partner.findByIdAndDelete(id);
     if (!item) return NextResponse.json({ error: 'Not found.' }, { status: 404 });
+    revalidatePath('/');
     return NextResponse.json({ success: true });
   } catch { return NextResponse.json({ error: 'Failed to delete.' }, { status: 500 }); }
 }

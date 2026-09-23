@@ -1,11 +1,27 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import PageContent from '@/models/PageContent';
 import { getPageDefaults, PAGE_CONTENT_SCHEMA } from '@/lib/pageContentSchema';
 import { sanitizeRichText } from '@/lib/sanitize';
+
+// Every page-content slug's actual public URL, so a save can revalidate
+// exactly the page it affects.
+const SLUG_TO_PATH = {
+  home: '/',
+  about: '/about',
+  team: '/team',
+  donate: '/donate',
+  getInvolved: '/get-involved',
+  contact: '/contact',
+  impact: '/impact',
+  news: '/news',
+  privacyPolicy: '/privacy-policy',
+  terms: '/terms',
+};
 
 // GET /api/admin/page-content?slug=home - public, returns merged defaults + saved data.
 // The admin Page Content editor reads from this same endpoint, so a
@@ -61,6 +77,7 @@ export async function PUT(request) {
       { slug, data },
       { new: true, upsert: true, runValidators: true }
     );
+    if (SLUG_TO_PATH[slug]) revalidatePath(SLUG_TO_PATH[slug]);
     return NextResponse.json(doc);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

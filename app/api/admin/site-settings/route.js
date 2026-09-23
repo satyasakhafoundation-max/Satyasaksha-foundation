@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import SiteSettings from '@/models/SiteSettings';
@@ -45,6 +46,9 @@ export async function PUT(request) {
       upsert: true,
       runValidators: true,
     });
+    // Site Settings feeds the root layout (Footer, SEO metadata) shared by
+    // every page — revalidate the whole layout, not just one path.
+    revalidatePath('/', 'layout');
     return NextResponse.json(settings);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });

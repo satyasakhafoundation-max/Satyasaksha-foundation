@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import CoreValue from '@/models/CoreValue';
@@ -31,6 +32,7 @@ export async function POST(request) {
     await dbConnect();
     const body = await request.json();
     const value = await CoreValue.create(body);
+    revalidatePath('/about');
     return NextResponse.json(value, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -56,6 +58,7 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Core value not found' }, { status: 404 });
     }
 
+    revalidatePath('/about');
     return NextResponse.json(value);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -77,6 +80,7 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Core value not found' }, { status: 404 });
     }
 
+    revalidatePath('/about');
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

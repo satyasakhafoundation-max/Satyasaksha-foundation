@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdmin } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import NewsArticle from '@/models/NewsArticle';
@@ -31,6 +32,9 @@ export async function POST(request) {
     if (body.content) body.content = sanitizeRichText(body.content);
     // Slug and publishedAt are handled by the pre-save hook in the model
     const article = await NewsArticle.create(body);
+    revalidatePath('/news');
+    revalidatePath('/');
+    if (article.slug) revalidatePath(`/news/${article.slug}`);
     return NextResponse.json(article, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -64,6 +68,9 @@ export async function PUT(request) {
     });
 
     if (!article) return NextResponse.json({ error: 'Article not found.' }, { status: 404 });
+    revalidatePath('/news');
+    revalidatePath('/');
+    if (article.slug) revalidatePath(`/news/${article.slug}`);
     return NextResponse.json(article);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
@@ -82,6 +89,9 @@ export async function DELETE(request) {
     const id = searchParams.get('id');
     const article = await NewsArticle.findByIdAndDelete(id);
     if (!article) return NextResponse.json({ error: 'Article not found.' }, { status: 404 });
+    revalidatePath('/news');
+    revalidatePath('/');
+    if (article.slug) revalidatePath(`/news/${article.slug}`);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
